@@ -7,8 +7,6 @@
 
 Modern, secure, and feature-rich school management system built with Flask. Fully localized in Turkmen language with real-time lesson tracking, voice notifications, and mobile-responsive design.
 
-![EDMS Dashboard](screenshot.png)
-
 ## ✨ Features
 
 ### 🎯 Role-Based Access Control
@@ -280,10 +278,6 @@ This project is licensed under the MIT License - see the [LICENSE](LICENSE) file
 - [Bootstrap](https://getbootstrap.com/) - UI framework
 - [Bootstrap Icons](https://icons.getbootstrap.com/) - Icon library
 - [SQLAlchemy](https://www.sqlalchemy.org/) - ORM
-
-## 📞 Support
-
-For support, email support@edms.tm or create an issue in this repository.
 
 ## ⭐ Show Your Support
 
