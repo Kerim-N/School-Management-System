@@ -1,0 +1,96 @@
+{% extends "base.html" %}
+
+{% block title %}Mudir - Dolandyryş Paneli{% endblock %}
+
+{% block page_title %}Mudir Dolandyryş Paneli{% endblock %}
+
+{% block content %}
+<div class="row">
+    <div class="col-md-3">
+        <div class="stat-card">
+            <i class="bi bi-people-fill" style="font-size: 2rem; opacity: 0.8;"></i>
+            <h3 class="mt-3">{{ stats.total_students }}</h3>
+            <p>Jemi Okuwçylar</p>
+        </div>
+    </div>
+    
+    <div class="col-md-3">
+        <div class="stat-card success">
+            <i class="bi bi-person-badge-fill" style="font-size: 2rem; opacity: 0.8;"></i>
+            <h3 class="mt-3">{{ stats.total_teachers }}</h3>
+            <p>Jemi Mugallymlar</p>
+        </div>
+    </div>
+    
+    <div class="col-md-3">
+        <div class="stat-card warning">
+            <i class="bi bi-grid-3x3-gap-fill" style="font-size: 2rem; opacity: 0.8;"></i>
+            <h3 class="mt-3">{{ stats.total_classes }}</h3>
+            <p>Jemi Synplar</p>
+        </div>
+    </div>
+    
+    <div class="col-md-3">
+        <div class="stat-card info">
+            <i class="bi bi-book-fill" style="font-size: 2rem; opacity: 0.8;"></i>
+            <h3 class="mt-3">{{ stats.total_subjects }}</h3>
+            <p>Jemi Dersler</p>
+        </div>
+    </div>
+</div>
+
+<div class="row">
+    <div class="col-md-6">
+        <div class="card">
+            <div class="card-header">
+                <i class="bi bi-lightning-fill text-warning"></i> Çalt hereketler
+            </div>
+            <div class="card-body">
+                <div class="d-grid gap-2">
+                    <a href="{{ url_for('director_create_user') }}" class="btn btn-outline-primary">
+                        <i class="bi bi-person-plus"></i> Täze Ulanyjy Döretmek
+                    </a>
+                    <a href="{{ url_for('director_users') }}" class="btn btn-outline-secondary">
+                        <i class="bi bi-people"></i> Ähli Ulanyjylary Görmek
+                    </a>
+                    <a href="{{ url_for('director_classes') }}" class="btn btn-outline-info">
+                        <i class="bi bi-grid-3x3"></i> Synplary Dolandyrmak
+                    </a>
+                </div>
+            </div>
+        </div>
+    </div>
+    
+    <div class="col-md-6">
+        <div class="card">
+            <div class="card-header">
+                <i class="bi bi-info-circle-fill text-info"></i> Ulgam barada
+            </div>
+            <div class="card-body">
+                <h5>Hoş geldiňiz!</h5>
+                <p>ASE (Akylly Synp Elektron Dolandyryş) mekdebiňizi dolandyrmak üçin döredilen täze we häzirki zaman ulgamy.</p>
+                <p class="mb-0"><strong>Siziň hukuklaryňyz:</strong></p>
+                <ul>
+                    <li>Ulanyjylary döretmek, üýtgetmek, öçürmek</li>
+                    <li>Synplary we dersleri dolandyrmak</li>
+                    <li>Ähli maglumatlara girmek</li>
+                    <li>Statistikalary görmek</li>
+                </ul>
+            </div>
+        </div>
+    </div>
+</div>
+
+<div class="row mt-4">
+    <div class="col-12">
+        <div class="card">
+            <div class="card-header">
+                <i class="bi bi-bar-chart-fill text-primary"></i> Statistika
+            </div>
+            <div class="card-body">
+                <p class="text-center text-muted">Statistika maglumatlary ýakyn wagtda goşular</p>
+            </div>
+        </div>
+    </div>
+</div>
+{% endblock %}

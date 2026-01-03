@@ -1,0 +1,92 @@
+{% extends "base.html" %}
+
+{% block title %}Ene-ata - Dolandyryş Paneli{% endblock %}
+
+{% block page_title %}Ene-ata Dolandyryş Paneli{% endblock %}
+
+{% block content %}
+<div class="card">
+    <div class="card-header">
+        <i class="bi bi-people-fill"></i> Meniň Çagalarym
+    </div>
+    <div class="card-body">
+        {% if children %}
+            <div class="row">
+                {% for child in children %}
+                <div class="col-md-6 mb-3">
+                    <div class="card border-primary">
+                        <div class="card-body">
+                            <div class="d-flex align-items-center mb-3">
+                                <div class="user-avatar me-3" style="width: 50px; height: 50px; font-size: 1.2rem;">
+                                    {{ child.full_name[0].upper() }}
+                                </div>
+                                <div>
+                                    <h5 class="mb-0">{{ child.full_name }}</h5>
+                                    {% if child.student_class %}
+                                        <p class="text-muted mb-0">
+                                            <i class="bi bi-grid-3x3"></i> {{ child.student_class.name }} synpy
+                                        </p>
+                                    {% endif %}
+                                </div>
+                            </div>
+                            
+                            <hr>
+                            
+                            <div class="d-grid gap-2">
+                                <a href="{{ url_for('parent_child_grades', child_id=child.id) }}" class="btn btn-outline-primary btn-sm">
+                                    <i class="bi bi-clipboard-data"></i> Bahalaryna Seret
+                                </a>
+                                <a href="{{ url_for('parent_child_attendance', child_id=child.id) }}" class="btn btn-outline-success btn-sm">
+                                    <i class="bi bi-calendar-check"></i> Gatnaşygyna Seret
+                                </a>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+                {% endfor %}
+            </div>
+        {% else %}
+            <div class="text-center py-5">
+                <i class="bi bi-person-x" style="font-size: 4rem; color: #cbd5e1;"></i>
+                <p class="text-muted mt-3">Size entek çaga bellenmedi</p>
+                <p class="text-muted small">Direktor bilen habarlaşyň we çagaňyzy hasabyňyza baglanyň</p>
+            </div>
+        {% endif %}
+    </div>
+</div>
+
+<div class="row mt-3">
+    <div class="col-md-6">
+        <div class="card">
+            <div class="card-header">
+                <i class="bi bi-info-circle"></i> Maglumat
+            </div>
+            <div class="card-body">
+                <h6>Hoş geldiňiz!</h6>
+                <p>EDMS ulgamynda çagalaryňyzyň okuw ösüşine syn edip bilersiňiz.</p>
+                <ul class="mb-0">
+                    <li>Bahalaryny görüp bilersiňiz</li>
+                    <li>Gatnaşygyny yzarlaýyp bilersiňiz</li>
+                    <li>Mugallymlar bilen habarlaşyp bilersiňiz</li>
+                </ul>
+            </div>
+        </div>
+    </div>
+    
+    <div class="col-md-6">
+        <div class="card">
+            <div class="card-header">
+                <i class="bi bi-lightbulb"></i> Maslahatlar
+            </div>
+            <div class="card-body">
+                <ul class="mb-0">
+                    <li>Her gün çagaňyzyň bahalaryny barlap görüň</li>
+                    <li>Gatnaşygy yzygiderli yzarlaň</li>
+                    <li>Soraglar bolsa mugallymlar bilen habarlaşyň</li>
+                    <li>Çagaňyzyň okuw meýilnamasy bilen tanyşyň</li>
+                </ul>
+            </div>
+        </div>
+    </div>
+</div>
+{% endblock %}

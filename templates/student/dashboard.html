@@ -1,0 +1,104 @@
+{% extends "base.html" %}
+
+{% block title %}Okuwçy - Dolandyryş Paneli{% endblock %}
+
+{% block page_title %}Okuwçy Dolandyryş Paneli{% endblock %}
+
+{% block content %}
+<!-- Live Lesson Widget -->
+<div class="row">
+    <div class="col-12">
+        {% include 'components/live_lesson_widget.html' %}
+    </div>
+</div>
+
+<div class="row">
+    <div class="col-md-6">
+        <div class="card">
+            <div class="card-body">
+                <div class="d-flex align-items-center">
+                    <div class="user-avatar me-3" style="width: 60px; height: 60px; font-size: 1.5rem;">
+                        {{ current_user.full_name[0].upper() }}
+                    </div>
+                    <div>
+                        <h4 class="mb-1">{{ current_user.full_name }}</h4>
+                        {% if my_class %}
+                            <p class="mb-0 text-muted"><i class="bi bi-grid-3x3"></i> {{ my_class.name }} synpy</p>
+                        {% endif %}
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+    
+    <div class="col-md-6">
+        <div class="card">
+            <div class="card-body">
+                <h6 class="text-muted mb-3">Meniň Derslerim</h6>
+                <h3 class="mb-0">{{ subjects|length }}</h3>
+                <p class="text-muted mb-0">Jemi ders</p>
+            </div>
+        </div>
+    </div>
+</div>
+
+<div class="row mt-3">
+    <div class="col-md-8">
+        <div class="card">
+            <div class="card-header">
+                <i class="bi bi-book-fill"></i> Meniň Derslerim
+            </div>
+            <div class="card-body">
+                {% if subjects %}
+                    <div class="list-group">
+                        {% for subject in subjects %}
+                        <div class="list-group-item d-flex justify-content-between align-items-center">
+                            <div>
+                                <h6 class="mb-1"><i class="bi bi-book"></i> {{ subject.name }}</h6>
+                                <small class="text-muted">Mugallym: {{ subject.teacher.full_name }}</small>
+                            </div>
+                            <i class="bi bi-chevron-right"></i>
+                        </div>
+                        {% endfor %}
+                    </div>
+                {% else %}
+                    <div class="text-center py-4">
+                        <i class="bi bi-journal-x" style="font-size: 3rem; color: #cbd5e1;"></i>
+                        <p class="text-muted mt-2">Entek ders bellenmedi</p>
+                    </div>
+                {% endif %}
+            </div>
+        </div>
+    </div>
+    
+    <div class="col-md-4">
+        <div class="card">
+            <div class="card-header">
+                <i class="bi bi-lightning-fill text-warning"></i> Çalt girmeler
+            </div>
+            <div class="card-body">
+                <div class="d-grid gap-2">
+                    <a href="{{ url_for('student_grades') }}" class="btn btn-outline-primary">
+                        <i class="bi bi-clipboard-data"></i> Meniň Bahalarym
+                    </a>
+                    <a href="{{ url_for('student_attendance') }}" class="btn btn-outline-success">
+                        <i class="bi bi-calendar-check"></i> Meniň Gatnaşygym
+                    </a>
+                    <a href="{{ url_for('student_lesson_plans') }}" class="btn btn-outline-info">
+                        <i class="bi bi-book"></i> Okuw Meýilnamasy
+                    </a>
+                </div>
+            </div>
+        </div>
+        
+        <div class="card mt-3">
+            <div class="card-header">
+                <i class="bi bi-info-circle"></i> Maglumat
+            </div>
+            <div class="card-body">
+                <p class="small mb-0">Bu ýerde derslerňize, bahalarňyza we gatnaşygyňyza syn edip bilersiňiz.</p>
+            </div>
+        </div>
+    </div>
+</div>
+{% endblock %}

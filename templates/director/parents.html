@@ -1,0 +1,131 @@
+{% extends "base.html" %}
+
+{% block title %}Ene-atalar - Direktor{% endblock %}
+
+{% block page_title %}Ene-atalary we Çagalaryny Dolandyrmak{% endblock %}
+
+{% block content %}
+<div class="card">
+    <div class="card-header">
+        <i class="bi bi-people-fill"></i> Ene-atalar we olaryň Çagalary
+    </div>
+    <div class="card-body">
+        {% if parents %}
+            {% for parent in parents %}
+            <div class="card mb-3 border-primary">
+                <div class="card-header bg-light">
+                    <div class="row align-items-center">
+                        <div class="col-md-6">
+                            <h5 class="mb-0">
+                                <i class="bi bi-person-circle"></i> {{ parent.full_name }}
+                            </h5>
+                            <small class="text-muted">Ulanyjy ady: {{ parent.username }}</small>
+                        </div>
+                        <div class="col-md-6 text-end">
+                            <button class="btn btn-sm btn-primary" data-bs-toggle="modal" data-bs-target="#addChildModal{{ parent.id }}">
+                                <i class="bi bi-plus-circle"></i> Çaga Goşmak
+                            </button>
+                        </div>
+                    </div>
+                </div>
+                <div class="card-body">
+                    {% set children = students|selectattr('parent_id', 'equalto', parent.id)|list %}
+                    {% if children %}
+                        <div class="table-responsive">
+                            <table class="table table-sm">
+                                <thead>
+                                    <tr>
+                                        <th>Çaganyň ady</th>
+                                        <th>Synp</th>
+                                        <th>Hereket</th>
+                                    </tr>
+                                </thead>
+                                <tbody>
+                                    {% for child in children %}
+                                    <tr>
+                                        <td>
+                                            <i class="bi bi-person-badge"></i> {{ child.full_name }}
+                                        </td>
+                                        <td>
+                                            {% if child.student_class %}
+                                                <span class="badge bg-info">{{ child.student_class.name }}</span>
+                                            {% else %}
+                                                <span class="text-muted">-</span>
+                                            {% endif %}
+                                        </td>
+                                        <td>
+                                            <form method="POST" action="{{ url_for('director_remove_child_from_parent', parent_id=parent.id, student_id=child.id) }}" style="display: inline;">
+                                                <button type="submit" class="btn btn-sm btn-outline-danger" onclick="return confirm('Bu çagany ene-atadan aýyrmak isleýärsiňizmi?');">
+                                                    <i class="bi bi-x-circle"></i> Aýyrmak
+                                                </button>
+                                            </form>
+                                        </td>
+                                    </tr>
+                                    {% endfor %}
+                                </tbody>
+                            </table>
+                        </div>
+                    {% else %}
+                        <p class="text-muted mb-0">Bu ene-ata entek çaga baglanmady</p>
+                    {% endif %}
+                </div>
+            </div>
+            
+            <!-- Add Child Modal -->
+            <div class="modal fade" id="addChildModal{{ parent.id }}" tabindex="-1">
+                <div class="modal-dialog">
+                    <div class="modal-content">
+                        <div class="modal-header">
+                            <h5 class="modal-title">{{ parent.full_name }} üçin Çaga Goşmak</h5>
+                            <button type="button" class="btn-close" data-bs-dismiss="modal"></button>
+                        </div>
+                        <form method="POST" action="{{ url_for('director_add_child_to_parent', parent_id=parent.id) }}">
+                            <div class="modal-body">
+                                <div class="mb-3">
+                                    <label for="student_id{{ parent.id }}" class="form-label">Okuwçy saýlaň <span class="text-danger">*</span></label>
+                                    <select class="form-select" id="student_id{{ parent.id }}" name="student_id" required>
+                                        <option value="">Saýlaň...</option>
+                                        {% for student in students %}
+                                            {% if not student.parent_id %}
+                                            <option value="{{ student.id }}">
+                                                {{ student.full_name }}
+                                                {% if student.student_class %}({{ student.student_class.name }}){% endif %}
+                                            </option>
+                                            {% endif %}
+                                        {% endfor %}
+                                    </select>
+                                    <small class="text-muted">Diňe ene-atasyz okuwçylar görkezilýär</small>
+                                </div>
+                            </div>
+                            <div class="modal-footer">
+                                <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Ýatyrmak</button>
+                                <button type="submit" class="btn btn-primary">
+                                    <i class="bi bi-check-circle"></i> Goşmak
+                                </button>
+                            </div>
+                        </form>
+                    </div>
+                </div>
+            </div>
+            {% endfor %}
+        {% else %}
+            <div class="text-center py-5">
+                <i class="bi bi-person-x" style="font-size: 4rem; color: #cbd5e1;"></i>
+                <p class="text-muted mt-3">Ene-ata tapylmady</p>
+                <a href="{{ url_for('director_create_user') }}" class="btn btn-primary">
+                    <i class="bi bi-plus-circle"></i> Ene-ata Döretmek
+                </a>
+            </div>
+        {% endif %}
+    </div>
+</div>
+
+<div class="card mt-3">
+    <div class="card-header">
+        <i class="bi bi-info-circle"></i> Bellik
+    </div>
+    <div class="card-body">
+        <p class="mb-0">Bu sahypada ene-atalara çagalaryny baglap bilersiňiz. Çaga baglanandan soň ene-ata çagasynyň bahalaryny we gatnaşygyny görüp biler.</p>
+    </div>
+</div>
+{% endblock %}

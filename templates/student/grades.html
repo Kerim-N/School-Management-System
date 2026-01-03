@@ -1,0 +1,134 @@
+{% extends "base.html" %}
+
+{% block title %}Meniň Bahalarym - Okuwçy{% endblock %}
+
+{% block page_title %}Meniň Bahalarym{% endblock %}
+
+{% block content %}
+<div class="card">
+    <div class="card-header">
+        <i class="bi bi-clipboard-data-fill"></i> Bahalarym
+    </div>
+    <div class="card-body">
+        {% if grades %}
+            <div class="table-responsive">
+                <table class="table table-hover">
+                    <thead>
+                        <tr>
+                            <th>Ders</th>
+                            <th>Baha</th>
+                            <th>Sene</th>
+                            <th>Teswir</th>
+                        </tr>
+                    </thead>
+                    <tbody>
+                        {% for grade in grades %}
+                        <tr>
+                            <td>
+                                <strong>{{ grade.subject.name }}</strong>
+                            </td>
+                            <td>
+                                {% if grade.grade == 5 %}
+                                    <span class="badge bg-success" style="font-size: 1.2rem;">5</span>
+                                    <small class="text-muted">Ajaýyp</small>
+                                {% elif grade.grade == 4 %}
+                                    <span class="badge bg-primary" style="font-size: 1.2rem;">4</span>
+                                    <small class="text-muted">Gowy</small>
+                                {% elif grade.grade == 3 %}
+                                    <span class="badge bg-info" style="font-size: 1.2rem;">3</span>
+                                    <small class="text-muted">Kanagatlanarly</small>
+                                {% elif grade.grade == 2 %}
+                                    <span class="badge bg-warning" style="font-size: 1.2rem;">2</span>
+                                    <small class="text-muted">Pes</small>
+                                {% else %}
+                                    <span class="badge bg-danger" style="font-size: 1.2rem;">{{ grade.grade }}</span>
+                                    <small class="text-muted">Ýeterlik däl</small>
+                                {% endif %}
+                            </td>
+                            <td>
+                                <i class="bi bi-calendar"></i> {{ grade.date.strftime('%d.%m.%Y') }}
+                            </td>
+                            <td>
+                                {% if grade.comment %}
+                                    {{ grade.comment }}
+                                {% else %}
+                                    <span class="text-muted">-</span>
+                                {% endif %}
+                            </td>
+                        </tr>
+                        {% endfor %}
+                    </tbody>
+                </table>
+            </div>
+        {% else %}
+            <div class="text-center py-5">
+                <i class="bi bi-clipboard-x" style="font-size: 4rem; color: #cbd5e1;"></i>
+                <p class="text-muted mt-3">Entek baha goýulmady</p>
+            </div>
+        {% endif %}
+    </div>
+</div>
+
+{% if grades %}
+<div class="row mt-3">
+    <div class="col-md-4">
+        <div class="card">
+            <div class="card-body text-center">
+                <h6 class="text-muted mb-2">Ortaça Baha</h6>
+                <h2 class="mb-0">
+                    {% set total = grades|sum(attribute='grade') %}
+                    {% set avg = (total / grades|length)|round(2) %}
+                    {{ avg }}
+                </h2>
+            </div>
+        </div>
+    </div>
+    
+    <div class="col-md-4">
+        <div class="card">
+            <div class="card-body text-center">
+                <h6 class="text-muted mb-2">Jemi Baha</h6>
+                <h2 class="mb-0">{{ grades|length }}</h2>
+            </div>
+        </div>
+    </div>
+    
+    <div class="col-md-4">
+        <div class="card">
+            <div class="card-body text-center">
+                <h6 class="text-muted mb-2">Iň Ýokary Baha</h6>
+                <h2 class="mb-0">
+                    {% set max_grade = grades|map(attribute='grade')|max %}
+                    <span class="badge bg-success" style="font-size: 1.5rem;">{{ max_grade }}</span>
+                </h2>
+            </div>
+        </div>
+    </div>
+</div>
+{% endif %}
+
+<div class="card mt-3">
+    <div class="card-header">
+        <i class="bi bi-info-circle"></i> Baha ulgamy
+    </div>
+    <div class="card-body">
+        <div class="row">
+            <div class="col-md">
+                <span class="badge bg-success">5</span> Ajaýyp
+            </div>
+            <div class="col-md">
+                <span class="badge bg-primary">4</span> Gowy
+            </div>
+            <div class="col-md">
+                <span class="badge bg-info">3</span> Kanagatlanarly
+            </div>
+            <div class="col-md">
+                <span class="badge bg-warning">2</span> Pes
+            </div>
+            <div class="col-md">
+                <span class="badge bg-danger">1</span> Ýeterlik däl
+            </div>
+        </div>
+    </div>
+</div>
+{% endblock %}

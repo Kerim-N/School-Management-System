@@ -1,0 +1,72 @@
+{% extends "base.html" %}
+
+{% block title %}Okuwçylar - Mugallym{% endblock %}
+
+{% block page_title %}Meniň Okuwçylarym{% endblock %}
+
+{% block content %}
+<div class="card">
+    <div class="card-header">
+        <i class="bi bi-people-fill"></i> Synplarymyň Okuwçylary
+    </div>
+    <div class="card-body">
+        {% if students %}
+            <div class="table-responsive">
+                <table class="table table-hover">
+                    <thead>
+                        <tr>
+                            <th>ID</th>
+                            <th>Doly ady</th>
+                            <th>Ulanyjy ady</th>
+                            <th>Synp</th>
+                            <th>Hereketler</th>
+                        </tr>
+                    </thead>
+                    <tbody>
+                        {% for student in students %}
+                        <tr>
+                            <td>{{ student.id }}</td>
+                            <td>
+                                <div class="d-flex align-items-center">
+                                    <div class="user-avatar me-2" style="width: 35px; height: 35px; font-size: 0.9rem;">
+                                        {{ student.full_name[0].upper() }}
+                                    </div>
+                                    <strong>{{ student.full_name }}</strong>
+                                </div>
+                            </td>
+                            <td>{{ student.username }}</td>
+                            <td>
+                                {% if student.student_class %}
+                                    <span class="badge bg-primary">{{ student.student_class.name }}</span>
+                                {% else %}
+                                    <span class="text-muted">-</span>
+                                {% endif %}
+                            </td>
+                            <td>
+                                <button class="btn btn-sm btn-outline-info" data-bs-toggle="tooltip" title="Bahalaryna seret">
+                                    <i class="bi bi-clipboard-data"></i>
+                                </button>
+                            </td>
+                        </tr>
+                        {% endfor %}
+                    </tbody>
+                </table>
+            </div>
+        {% else %}
+            <div class="text-center py-5">
+                <i class="bi bi-people" style="font-size: 4rem; color: #cbd5e1;"></i>
+                <p class="text-muted mt-3">Siziň synplaryňyzda entek okuwçy ýok</p>
+            </div>
+        {% endif %}
+    </div>
+</div>
+
+<div class="card mt-3">
+    <div class="card-header">
+        <i class="bi bi-info-circle"></i> Maglumat
+    </div>
+    <div class="card-body">
+        <p class="mb-0">Bu ýerde siziň synp ýolbaşçysy boldugyňyz synplaryň ähli okuwçylary görkezilýär. Okuwçylaryň bahalaryny we gatnaşygyny dolandyryp bilersiňiz.</p>
+    </div>
+</div>
+{% endblock %}

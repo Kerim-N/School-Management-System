@@ -1,0 +1,91 @@
+{% extends "base.html" %}
+
+{% block title %}Okuw Meýilnamasy - Okuwçy{% endblock %}
+
+{% block page_title %}Okuw Meýilnamasy{% endblock %}
+
+{% block content %}
+<div class="card">
+    <div class="card-header">
+        <i class="bi bi-book-fill"></i> Meniň Derslerimin Okuw Meýilnamasy
+    </div>
+    <div class="card-body">
+        {% if plans %}
+            <div class="accordion" id="lessonPlansAccordion">
+                {% for plan in plans %}
+                <div class="accordion-item">
+                    <h2 class="accordion-header">
+                        <button class="accordion-button {% if not loop.first %}collapsed{% endif %}" type="button" data-bs-toggle="collapse" data-bs-target="#plan{{ plan.id }}">
+                            <div class="d-flex align-items-center w-100">
+                                <span class="badge bg-primary me-2">{{ plan.week }}-nji hepde</span>
+                                <strong>{{ plan.topic }}</strong>
+                                <span class="badge bg-secondary ms-auto me-2">{{ plan.subject.name }}</span>
+                            </div>
+                        </button>
+                    </h2>
+                    <div id="plan{{ plan.id }}" class="accordion-collapse collapse {% if loop.first %}show{% endif %}" data-bs-parent="#lessonPlansAccordion">
+                        <div class="accordion-body">
+                            <div class="row">
+                                <div class="col-md-6 mb-3">
+                                    <div class="card bg-light">
+                                        <div class="card-body">
+                                            <h6><i class="bi bi-book text-primary"></i> Ders</h6>
+                                            <p class="mb-0">{{ plan.subject.name }}</p>
+                                        </div>
+                                    </div>
+                                </div>
+                                
+                                <div class="col-md-6 mb-3">
+                                    <div class="card bg-light">
+                                        <div class="card-body">
+                                            <h6><i class="bi bi-person text-success"></i> Mugallym</h6>
+                                            <p class="mb-0">{{ plan.subject.teacher.full_name }}</p>
+                                        </div>
+                                    </div>
+                                </div>
+                            </div>
+                            
+                            {% if plan.objectives %}
+                            <div class="alert alert-info">
+                                <h6><i class="bi bi-target"></i> Okuw Maksatlary:</h6>
+                                <p class="mb-0">{{ plan.objectives }}</p>
+                            </div>
+                            {% endif %}
+                            
+                            {% if plan.homework %}
+                            <div class="alert alert-warning">
+                                <h6><i class="bi bi-house-door"></i> Öý Işi:</h6>
+                                <p class="mb-0">{{ plan.homework }}</p>
+                            </div>
+                            {% endif %}
+                            
+                            <hr>
+                            <small class="text-muted">
+                                <i class="bi bi-calendar"></i> Döredilen: {{ plan.created_at.strftime('%d.%m.%Y, %H:%M') }}
+                            </small>
+                        </div>
+                    </div>
+                </div>
+                {% endfor %}
+            </div>
+        {% else %}
+            <div class="text-center py-5">
+                <i class="bi bi-journal-x" style="font-size: 4rem; color: #cbd5e1;"></i>
+                <p class="text-muted mt-3">Entek okuw meýilnamasy ýok</p>
+                <p class="text-muted small">Mugallymlar okuw meýilnamasyny ýakyn wagtda goşarlar</p>
+            </div>
+        {% endif %}
+    </div>
+</div>
+
+{% if plans %}
+<div class="card mt-3">
+    <div class="card-header">
+        <i class="bi bi-info-circle"></i> Bellik
+    </div>
+    <div class="card-body">
+        <p class="mb-0">Bu ýerde mugallymlaryňyzyň taýýarlan okuw meýilnamasyny görüp bilersiňiz. Öý işlerini we okuw maksatlaryny üns bilen okaň.</p>
+    </div>
+</div>
+{% endif %}
+{% endblock %}

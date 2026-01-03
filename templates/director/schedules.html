@@ -1,0 +1,58 @@
+{% extends "base.html" %}
+
+{% block title %}Ders Tertibi - Direktor{% endblock %}
+
+{% block page_title %}Ders Tertibi Dolandyrmak{% endblock %}
+
+{% block content %}
+<div class="card">
+    <div class="card-header">
+        <i class="bi bi-calendar-week-fill"></i> Synplar üçin Ders Tertibi
+    </div>
+    <div class="card-body">
+        {% if classes %}
+            <div class="row">
+                {% for class in classes %}
+                <div class="col-md-4 mb-3">
+                    <div class="card border-primary h-100">
+                        <div class="card-body">
+                            <h5 class="card-title">
+                                <i class="bi bi-grid-3x3"></i> {{ class.name }}
+                            </h5>
+                            {% if class.teacher %}
+                                <p class="text-muted mb-3">
+                                    <i class="bi bi-person"></i> {{ class.teacher.full_name }}
+                                </p>
+                            {% endif %}
+                            <p class="mb-2">
+                                <span class="badge bg-info">{{ class.students|length }} okuwçy</span>
+                            </p>
+                            <a href="{{ url_for('director_view_schedule', class_id=class.id) }}" class="btn btn-primary w-100">
+                                <i class="bi bi-calendar-week"></i> Ders Tertibini Görmek / Düzmek
+                            </a>
+                        </div>
+                    </div>
+                </div>
+                {% endfor %}
+            </div>
+        {% else %}
+            <div class="text-center py-5">
+                <i class="bi bi-calendar-x" style="font-size: 4rem; color: #cbd5e1;"></i>
+                <p class="text-muted mt-3">Synp tapylmady. Ilki synp dörediň.</p>
+                <a href="{{ url_for('director_classes') }}" class="btn btn-primary">
+                    <i class="bi bi-plus-circle"></i> Synp Döretmek
+                </a>
+            </div>
+        {% endif %}
+    </div>
+</div>
+
+<div class="card mt-3">
+    <div class="card-header">
+        <i class="bi bi-info-circle"></i> Bellik
+    </div>
+    <div class="card-body">
+        <p class="mb-0">Her synp üçin hepdelik ders tertibini düzüň. Ders wagty, arakesme we dersiň adyny görkeziň.</p>
+    </div>
+</div>
+{% endblock %}

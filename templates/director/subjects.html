@@ -1,0 +1,104 @@
+{% extends "base.html" %}
+
+{% block title %}Dersler - Direktor{% endblock %}
+
+{% block page_title %}Dersleri Dolandyrmak{% endblock %}
+
+{% block content %}
+<div class="row">
+    <div class="col-md-8">
+        <div class="card">
+            <div class="card-header">
+                <i class="bi bi-book-fill"></i> Ähli Dersler
+            </div>
+            <div class="card-body">
+                <div class="table-responsive">
+                    <table class="table table-hover">
+                        <thead>
+                            <tr>
+                                <th>ID</th>
+                                <th>Dersiň ady</th>
+                                <th>Synp</th>
+                                <th>Mugallym</th>
+                                <th>Hereketler</th>
+                            </tr>
+                        </thead>
+                        <tbody>
+                            {% for subject in subjects %}
+                            <tr>
+                                <td>{{ subject.id }}</td>
+                                <td><strong>{{ subject.name }}</strong></td>
+                                <td>
+                                    <span class="badge bg-primary">{{ subject.class_obj.name }}</span>
+                                </td>
+                                <td>{{ subject.teacher.full_name }}</td>
+                                <td>
+                                    <form method="POST" action="{{ url_for('director_delete_subject', subject_id=subject.id) }}" style="display: inline;" onsubmit="return confirm('Bu dersi öçürmek isleýärsiňizmi?');">
+                                        <button type="submit" class="btn btn-sm btn-outline-danger">
+                                            <i class="bi bi-trash"></i>
+                                        </button>
+                                    </form>
+                                </td>
+                            </tr>
+                            {% else %}
+                            <tr>
+                                <td colspan="5" class="text-center text-muted">Ders tapylmady</td>
+                            </tr>
+                            {% endfor %}
+                        </tbody>
+                    </table>
+                </div>
+            </div>
+        </div>
+    </div>
+    
+    <div class="col-md-4">
+        <div class="card">
+            <div class="card-header">
+                <i class="bi bi-plus-circle-fill"></i> Täze Ders Döretmek
+            </div>
+            <div class="card-body">
+                <form method="POST" action="{{ url_for('director_create_subject') }}">
+                    <div class="mb-3">
+                        <label for="name" class="form-label">Dersiň ady <span class="text-danger">*</span></label>
+                        <input type="text" class="form-control" id="name" name="name" required placeholder="mysal: Matematika">
+                    </div>
+                    
+                    <div class="mb-3">
+                        <label for="class_id" class="form-label">Synp <span class="text-danger">*</span></label>
+                        <select class="form-select" id="class_id" name="class_id" required>
+                            <option value="">Saýlaň...</option>
+                            {% for class in classes %}
+                            <option value="{{ class.id }}">{{ class.name }}</option>
+                            {% endfor %}
+                        </select>
+                    </div>
+                    
+                    <div class="mb-3">
+                        <label for="teacher_id" class="form-label">Mugallym <span class="text-danger">*</span></label>
+                        <select class="form-select" id="teacher_id" name="teacher_id" required>
+                            <option value="">Saýlaň...</option>
+                            {% for teacher in teachers %}
+                            <option value="{{ teacher.id }}">{{ teacher.full_name }}</option>
+                            {% endfor %}
+                        </select>
+                    </div>
+                    
+                    <button type="submit" class="btn btn-primary w-100">
+                        <i class="bi bi-check-circle"></i> Döretmek
+                    </button>
+                </form>
+            </div>
+        </div>
+        
+        <div class="card mt-3">
+            <div class="card-header">
+                <i class="bi bi-info-circle"></i> Maglumat
+            </div>
+            <div class="card-body">
+                <p class="small mb-0">Ders döredeniňizden soň, şol dersi ders jadwalyna goşup bilersiňiz.</p>
+            </div>
+        </div>
+    </div>
+</div>
+{% endblock %}

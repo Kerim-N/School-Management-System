@@ -1,0 +1,150 @@
+{% extends "base.html" %}
+
+{% block title %}{{ child.full_name }} - Gatnaşyk{% endblock %}
+
+{% block page_title %}{{ child.full_name }} - Gatnaşyk{% endblock %}
+
+{% block content %}
+<div class="mb-3">
+    <a href="{{ url_for('parent_dashboard') }}" class="btn btn-outline-secondary btn-sm">
+        <i class="bi bi-arrow-left"></i> Yza
+    </a>
+</div>
+
+<div class="card">
+    <div class="card-header d-flex justify-content-between align-items-center">
+        <span><i class="bi bi-calendar-check-fill"></i> {{ child.full_name }} - Gatnaşyk Taryhy</span>
+        {% if child.student_class %}
+            <span class="badge bg-primary">{{ child.student_class.name }} synpy</span>
+        {% endif %}
+    </div>
+    <div class="card-body">
+        {% if attendance %}
+            <div class="table-responsive">
+                <table class="table table-hover">
+                    <thead>
+                        <tr>
+                            <th>Sene</th>
+                            <th>Status</th>
+                            <th>Hepde güni</th>
+                        </tr>
+                    </thead>
+                    <tbody>
+                        {% for record in attendance %}
+                        <tr>
+                            <td>
+                                <i class="bi bi-calendar"></i> {{ record.date.strftime('%d.%m.%Y') }}
+                            </td>
+                            <td>
+                                {% if record.status == 'present' %}
+                                    <span class="badge bg-success">
+                                        <i class="bi bi-check-circle"></i> Geldi
+                                    </span>
+                                {% elif record.status == 'absent' %}
+                                    <span class="badge bg-danger">
+                                        <i class="bi bi-x-circle"></i> Gelmedi
+                                    </span>
+                                {% elif record.status == 'late' %}
+                                    <span class="badge bg-warning">
+                                        <i class="bi bi-clock"></i> Giç geldi
+                                    </span>
+                                {% elif record.status == 'excused' %}
+                                    <span class="badge bg-info">
+                                        <i class="bi bi-file-medical"></i> Rugsatly
+                                    </span>
+                                {% endif %}
+                            </td>
+                            <td class="text-muted">
+                                {% set weekday = record.date.strftime('%A') %}
+                                {% if weekday == 'Monday' %}Duşenbe{% endif %}
+                                {% if weekday == 'Tuesday' %}Sişenbe{% endif %}
+                                {% if weekday == 'Wednesday' %}Çarşenbe{% endif %}
+                                {% if weekday == 'Thursday' %}Penşenbe{% endif %}
+                                {% if weekday == 'Friday' %}Anna{% endif %}
+                                {% if weekday == 'Saturday' %}Şenbe{% endif %}
+                                {% if weekday == 'Sunday' %}Ýekşenbe{% endif %}
+                            </td>
+                        </tr>
+                        {% endfor %}
+                    </tbody>
+                </table>
+            </div>
+        {% else %}
+            <div class="text-center py-5">
+                <i class="bi bi-calendar-x" style="font-size: 4rem; color: #cbd5e1;"></i>
+                <p class="text-muted mt-3">Entek gatnaşyk bellenilmedi</p>
+            </div>
+        {% endif %}
+    </div>
+</div>
+
+{% if attendance %}
+<div class="row mt-3">
+    <div class="col-md-3">
+        <div class="card">
+            <div class="card-body text-center">
+                <i class="bi bi-check-circle-fill text-success" style="font-size: 2rem;"></i>
+                <h3 class="mt-2">{{ attendance|selectattr('status', 'equalto', 'present')|list|length }}</h3>
+                <p class="text-muted mb-0">Geldi</p>
+            </div>
+        </div>
+    </div>
+    
+    <div class="col-md-3">
+        <div class="card">
+            <div class="card-body text-center">
+                <i class="bi bi-x-circle-fill text-danger" style="font-size: 2rem;"></i>
+                <h3 class="mt-2">{{ attendance|selectattr('status', 'equalto', 'absent')|list|length }}</h3>
+                <p class="text-muted mb-0">Gelmedi</p>
+            </div>
+        </div>
+    </div>
+    
+    <div class="col-md-3">
+        <div class="card">
+            <div class="card-body text-center">
+                <i class="bi bi-clock-fill text-warning" style="font-size: 2rem;"></i>
+                <h3 class="mt-2">{{ attendance|selectattr('status', 'equalto', 'late')|list|length }}</h3>
+                <p class="text-muted mb-0">Giç geldi</p>
+            </div>
+        </div>
+    </div>
+    
+    <div class="col-md-3">
+        <div class="card">
+            <div class="card-body text-center">
+                <i class="bi bi-file-medical-fill text-info" style="font-size: 2rem;"></i>
+                <h3 class="mt-2">{{ attendance|selectattr('status', 'equalto', 'excused')|list|length }}</h3>
+                <p class="text-muted mb-0">Rugsatly</p>
+            </div>
+        </div>
+    </div>
+</div>
+
+<div class="card mt-3">
+    <div class="card-body">
+        <h6 class="mb-3">Gatnaşyk Göterijisi</h6>
+        <div class="progress" style="height: 30px;">
+            {% set total = attendance|length %}
+            {% set present = attendance|selectattr('status', 'equalto', 'present')|list|length %}
+            {% set percentage = ((present / total) * 100)|round(1) if total > 0 else 0 %}
+            <div class="progress-bar {% if percentage >= 90 %}bg-success{% elif percentage >= 75 %}bg-primary{% elif percentage >= 60 %}bg-warning{% else %}bg-danger{% endif %}" style="width: {{ percentage }}%">
+                {{ percentage }}%
+            </div>
+        </div>
+        <p class="text-muted mt-2 mb-0 small">
+            Jemi {{ total }} günüň {{ present }} güni sapaga geldi
+            {% if percentage >= 90 %}
+                <span class="text-success fw-bold">- Ajaýyp!</span>
+            {% elif percentage >= 75 %}
+                <span class="text-primary fw-bold">- Gowy</span>
+            {% elif percentage >= 60 %}
+                <span class="text-warning fw-bold">- Üns bermeli</span>
+            {% else %}
+                <span class="text-danger fw-bold">- Üns talaplandyrýar</span>
+            {% endif %}
+        </p>
+    </div>
+</div>
+{% endif %}
+{% endblock %}

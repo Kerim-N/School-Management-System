@@ -1,0 +1,157 @@
+{% extends "base.html" %}
+
+{% block title %}{{ class_obj.name }} - Ders Jadwaly{% endblock %}
+
+{% block page_title %}{{ class_obj.name }} - Ders Jadwaly{% endblock %}
+
+{% block content %}
+<div class="mb-3">
+    <a href="{{ url_for('director_schedules') }}" class="btn btn-outline-secondary btn-sm">
+        <i class="bi bi-arrow-left"></i> Yza
+    </a>
+</div>
+
+<div class="row">
+    <div class="col-md-4">
+        <div class="card">
+            <div class="card-header">
+                <i class="bi bi-plus-circle-fill"></i> Täze Ders Goşmak
+            </div>
+            <div class="card-body">
+                {% if subjects %}
+                    <form method="POST" action="{{ url_for('director_create_schedule', class_id=class_obj.id) }}">
+                        <div class="mb-3">
+                            <label for="day_of_week" class="form-label">Gün <span class="text-danger">*</span></label>
+                            <select class="form-select" id="day_of_week" name="day_of_week" required>
+                                <option value="Monday">Duşenbe</option>
+                                <option value="Tuesday">Sişenbe</option>
+                                <option value="Wednesday">Çarşenbe</option>
+                                <option value="Thursday">Penşenbe</option>
+                                <option value="Friday">Anna</option>
+                                <option value="Saturday">Şenbe</option>
+                            </select>
+                        </div>
+                        
+                        <div class="mb-3">
+                            <label for="lesson_number" class="form-label">Ders № <span class="text-danger">*</span></label>
+                            <input type="number" class="form-select" id="lesson_number" name="lesson_number" min="1" max="10" required>
+                        </div>
+                        
+                        <div class="mb-3">
+                            <label for="subject_id" class="form-label">Ders <span class="text-danger">*</span></label>
+                            <select class="form-select" id="subject_id" name="subject_id" required>
+                                <option value="">Saýlaň...</option>
+                                {% for subject in subjects %}
+                                <option value="{{ subject.id }}">{{ subject.name }} ({{ subject.teacher.full_name }})</option>
+                                {% endfor %}
+                            </select>
+                        </div>
+                        
+                        <div class="row">
+                            <div class="col-md-6 mb-3">
+                                <label for="start_time" class="form-label">Başlanýar <span class="text-danger">*</span></label>
+                                <input type="time" class="form-control" id="start_time" name="start_time" required>
+                            </div>
+                            
+                            <div class="col-md-6 mb-3">
+                                <label for="end_time" class="form-label">Gutarýar <span class="text-danger">*</span></label>
+                                <input type="time" class="form-control" id="end_time" name="end_time" required>
+                            </div>
+                        </div>
+                        
+                        <button type="submit" class="btn btn-primary w-100">
+                            <i class="bi bi-check-circle"></i> Goşmak
+                        </button>
+                    </form>
+                {% else %}
+                    <div class="alert alert-warning">
+                        <i class="bi bi-exclamation-triangle"></i> Bu synp üçin ilki ders döredilmeli.
+                    </div>
+                {% endif %}
+            </div>
+        </div>
+    </div>
+    
+    <div class="col-md-8">
+        <div class="card">
+            <div class="card-header">
+                <i class="bi bi-calendar-week-fill"></i> Hepdelik Ders Jadwaly
+            </div>
+            <div class="card-body">
+                <div class="table-responsive">
+                    <table class="table table-bordered table-hover">
+                        <thead class="table-light">
+                            <tr>
+                                <th style="width: 80px;">№</th>
+                                <th style="width: 100px;">Wagt</th>
+                                {% for day in days %}
+                                <th class="text-center">
+                                    {% if day == 'Monday' %}Duş{% endif %}
+                                    {% if day == 'Tuesday' %}Siş{% endif %}
+                                    {% if day == 'Wednesday' %}Çarş{% endif %}
+                                    {% if day == 'Thursday' %}Penş{% endif %}
+                                    {% if day == 'Friday' %}Anna{% endif %}
+                                    {% if day == 'Saturday' %}Şenbe{% endif %}
+                                </th>
+                                {% endfor %}
+                            </tr>
+                        </thead>
+                        <tbody>
+                            {% for i in range(1, 9) %}
+                            <tr>
+                                <td class="text-center"><strong>{{ i }}</strong></td>
+                                <td class="text-muted small">
+                                    {% set time_shown = False %}
+                                    {% for day in days %}
+                                        {% for schedule in schedule_by_day[day] %}
+                                            {% if schedule.lesson_number == i and not time_shown %}
+                                                {{ schedule.start_time }}-{{ schedule.end_time }}
+                                                {% set time_shown = True %}
+                                            {% endif %}
+                                        {% endfor %}
+                                    {% endfor %}
+                                </td>
+                                {% for day in days %}
+                                <td>
+                                    {% set found = false %}
+                                    {% for schedule in schedule_by_day[day] %}
+                                        {% if schedule.lesson_number == i %}
+                                            {% set found = true %}
+                                            <div class="d-flex justify-content-between align-items-start">
+                                                <div>
+                                                    <strong>{{ schedule.subject.name }}</strong><br>
+                                                    <small class="text-muted">{{ schedule.subject.teacher.full_name }}</small>
+                                                </div>
+                                                <form method="POST" action="{{ url_for('director_delete_schedule', schedule_id=schedule.id) }}" style="display: inline;">
+                                                    <button type="submit" class="btn btn-sm btn-outline-danger" onclick="return confirm('Öçürmek isleýärsiňizmi?');">
+                                                        <i class="bi bi-x"></i>
+                                                    </button>
+                                                </form>
+                                            </div>
+                                        {% endif %}
+                                    {% endfor %}
+                                    {% if not found %}
+                                        <span class="text-muted">-</span>
+                                    {% endif %}
+                                </td>
+                                {% endfor %}
+                            </tr>
+                            {% endfor %}
+                        </tbody>
+                    </table>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+
+<style>
+.table td {
+    vertical-align: middle;
+    padding: 0.5rem;
+}
+.table th {
+    background-color: #f8f9fa;
+}
+</style>
+{% endblock %}

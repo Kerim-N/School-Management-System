@@ -1,0 +1,120 @@
+{% extends "base.html" %}
+
+{% block title %}Okuw Meýilnamasy - Mugallym{% endblock %}
+
+{% block page_title %}Okuw Meýilnamasyny Dolandyrmak{% endblock %}
+
+{% block content %}
+<div class="row">
+    <div class="col-md-4">
+        <div class="card">
+            <div class="card-header">
+                <i class="bi bi-plus-circle-fill"></i> Täze Meýilnama Goşmak
+            </div>
+            <div class="card-body">
+                {% if subjects %}
+                    <form method="POST" action="{{ url_for('teacher_create_plan') }}">
+                        <div class="mb-3">
+                            <label for="subject_id" class="form-label">Ders <span class="text-danger">*</span></label>
+                            <select class="form-select" id="subject_id" name="subject_id" required>
+                                <option value="">Saýlaň...</option>
+                                {% for subject in subjects %}
+                                <option value="{{ subject.id }}">{{ subject.name }} ({{ subject.class_obj.name }})</option>
+                                {% endfor %}
+                            </select>
+                        </div>
+                        
+                        <div class="mb-3">
+                            <label for="week" class="form-label">Hepde № <span class="text-danger">*</span></label>
+                            <input type="number" class="form-control" id="week" name="week" min="1" max="52" required>
+                        </div>
+                        
+                        <div class="mb-3">
+                            <label for="date" class="form-label">Sene</label>
+                            <input type="date" class="form-control" id="date" name="date">
+                            <small class="text-muted">Sapagy geçirjek sene</small>
+                        </div>
+                        
+                        <div class="mb-3">
+                            <label for="topic" class="form-label">Tema <span class="text-danger">*</span></label>
+                            <input type="text" class="form-control" id="topic" name="topic" required placeholder="Sapagyň temasy">
+                        </div>
+                        
+                        <div class="mb-3">
+                            <label for="objectives" class="form-label">Maksatlar</label>
+                            <textarea class="form-control" id="objectives" name="objectives" rows="3" placeholder="Okuw maksatlary"></textarea>
+                        </div>
+                        
+                        <div class="mb-3">
+                            <label for="homework" class="form-label">Öý işi</label>
+                            <textarea class="form-control" id="homework" name="homework" rows="2" placeholder="Okuwçylar üçin öý işi"></textarea>
+                        </div>
+                        
+                        <button type="submit" class="btn btn-primary w-100">
+                            <i class="bi bi-check-circle"></i> Goşmak
+                        </button>
+                    </form>
+                {% else %}
+                    <div class="alert alert-warning">
+                        <i class="bi bi-exclamation-triangle"></i> Okuw meýilnamasyny döretmek üçin dersleňiz bolmaly.
+                    </div>
+                {% endif %}
+            </div>
+        </div>
+    </div>
+    
+    <div class="col-md-8">
+        <div class="card">
+            <div class="card-header">
+                <i class="bi bi-book-fill"></i> Meniň Okuw Meýilnamalarym
+            </div>
+            <div class="card-body">
+                {% if plans %}
+                    <div class="accordion" id="lessonPlansAccordion">
+                        {% for plan in plans %}
+                        <div class="accordion-item">
+                            <h2 class="accordion-header">
+                                <button class="accordion-button {% if not loop.first %}collapsed{% endif %}" type="button" data-bs-toggle="collapse" data-bs-target="#plan{{ plan.id }}">
+                                    <strong>Hepde {{ plan.week }}:</strong>&nbsp; {{ plan.topic }}
+                                    <span class="badge bg-primary ms-2">{{ plan.subject.name }}</span>
+                                </button>
+                            </h2>
+                            <div id="plan{{ plan.id }}" class="accordion-collapse collapse {% if loop.first %}show{% endif %}" data-bs-parent="#lessonPlansAccordion">
+                                <div class="accordion-body">
+                                    <div class="mb-3">
+                                        <strong><i class="bi bi-book"></i> Ders:</strong> {{ plan.subject.name }} ({{ plan.subject.class_obj.name }})
+                                    </div>
+                                    
+                                    {% if plan.objectives %}
+                                    <div class="mb-3">
+                                        <strong><i class="bi bi-target"></i> Maksatlar:</strong>
+                                        <p class="mt-1">{{ plan.objectives }}</p>
+                                    </div>
+                                    {% endif %}
+                                    
+                                    {% if plan.homework %}
+                                    <div class="mb-3">
+                                        <strong><i class="bi bi-house"></i> Öý işi:</strong>
+                                        <p class="mt-1">{{ plan.homework }}</p>
+                                    </div>
+                                    {% endif %}
+                                    
+                                    <small class="text-muted">
+                                        <i class="bi bi-calendar"></i> Döredilen: {{ plan.created_at.strftime('%d.%m.%Y') }}
+                                    </small>
+                                </div>
+                            </div>
+                        </div>
+                        {% endfor %}
+                    </div>
+                {% else %}
+                    <div class="text-center py-5">
+                        <i class="bi bi-journal-x" style="font-size: 4rem; color: #cbd5e1;"></i>
+                        <p class="text-muted mt-3">Entek okuw meýilnamasy döredilmedi</p>
+                    </div>
+                {% endif %}
+            </div>
+        </div>
+    </div>
+</div>
+{% endblock %}

@@ -1,0 +1,88 @@
+{% extends "base.html" %}
+
+{% block title %}Ulanyjylar - Direktor{% endblock %}
+
+{% block page_title %}Ulanyjylary Dolandyrmak{% endblock %}
+
+{% block content %}
+<div class="card">
+    <div class="card-header d-flex justify-content-between align-items-center">
+        <span><i class="bi bi-people-fill"></i> Ähli Ulanyjylar</span>
+        <a href="{{ url_for('director_create_user') }}" class="btn btn-primary btn-sm">
+            <i class="bi bi-person-plus"></i> Täze Ulanyjy
+        </a>
+    </div>
+    <div class="card-body">
+        <div class="table-responsive">
+            <table class="table table-hover">
+                <thead>
+                    <tr>
+                        <th>ID</th>
+                        <th>Ulanyjy ady</th>
+                        <th>Doly ady</th>
+                        <th>Rol</th>
+                        <th>Synp</th>
+                        <th>Parol</th>
+                        <th>Hereketler</th>
+                    </tr>
+                </thead>
+                <tbody>
+                    {% for user in users %}
+                    <tr>
+                        <td>{{ user.id }}</td>
+                        <td><strong>{{ user.username }}</strong></td>
+                        <td>{{ user.full_name }}</td>
+                        <td>
+                            {% if user.role == 'director' %}
+                                <span class="badge bg-danger">Direktor</span>
+                            {% elif user.role == 'teacher' %}
+                                <span class="badge bg-primary">Mugallym</span>
+                            {% elif user.role == 'student' %}
+                                <span class="badge bg-success">Okuwçy</span>
+                            {% elif user.role == 'parent' %}
+                                <span class="badge bg-info">Ene-ata</span>
+                            {% endif %}
+                        </td>
+                        <td>
+                            {% if user.class_id %}
+                                {{ user.student_class.name }}
+                            {% else %}
+                                -
+                            {% endif %}
+                        </td>
+                        <td>
+                            <code style="font-size: 0.85rem;">{{ user.password[:20] }}...</code>
+                        </td>
+                        <td>
+                            <a href="{{ url_for('director_edit_user', user_id=user.id) }}" class="btn btn-sm btn-outline-primary">
+                                <i class="bi bi-pencil"></i>
+                            </a>
+                            {% if user.id != current_user.id %}
+                            <form method="POST" action="{{ url_for('director_delete_user', user_id=user.id) }}" style="display: inline;" onsubmit="return confirm('Bu ulanyjyny öçürmek isleýärsiňizmi?');">
+                                <button type="submit" class="btn btn-sm btn-outline-danger">
+                                    <i class="bi bi-trash"></i>
+                                </button>
+                            </form>
+                            {% endif %}
+                        </td>
+                    </tr>
+                    {% else %}
+                    <tr>
+                        <td colspan="7" class="text-center text-muted">Ulanyjy tapylmady</td>
+                    </tr>
+                    {% endfor %}
+                </tbody>
+            </table>
+        </div>
+    </div>
+</div>
+
+<div class="card mt-3">
+    <div class="card-header">
+        <i class="bi bi-info-circle"></i> Bellik
+    </div>
+    <div class="card-body">
+        <p class="mb-0"><strong>Direktor hökmünde:</strong> Siz ähli ulanyjylaryň parollaryny görüp bilersiňiz we täzeläp bilersiňiz. Bu funksiýa ýitirilen parollary dikeltmek üçin ulanylýar.</p>
+    </div>
+</div>
+{% endblock %}

@@ -1,0 +1,103 @@
+{% extends "base.html" %}
+
+{% block title %}Ulanyjyny Üýtgetmek - Direktor{% endblock %}
+
+{% block page_title %}Ulanyjyny Üýtgetmek{% endblock %}
+
+{% block content %}
+<div class="row">
+    <div class="col-md-8 mx-auto">
+        <div class="card">
+            <div class="card-header">
+                <i class="bi bi-pencil-fill"></i> Ulanyjy Maglumatlaryny Üýtgetmek
+            </div>
+            <div class="card-body">
+                <form method="POST" action="{{ url_for('director_edit_user', user_id=user.id) }}">
+                    <div class="row">
+                        <div class="col-md-6 mb-3">
+                            <label for="username" class="form-label">Ulanyjy ady <span class="text-danger">*</span></label>
+                            <input type="text" class="form-control" id="username" name="username" value="{{ user.username }}" required>
+                        </div>
+                        
+                        <div class="col-md-6 mb-3">
+                            <label for="new_password" class="form-label">Täze Parol</label>
+                            <input type="text" class="form-control" id="new_password" name="new_password" placeholder="Üýtgetmek isleseňiz giriziň">
+                            <small class="text-muted">Boş goýsaňyz parol üýtgemez</small>
+                        </div>
+                    </div>
+                    
+                    <div class="mb-3">
+                        <label for="full_name" class="form-label">Doly ady <span class="text-danger">*</span></label>
+                        <input type="text" class="form-control" id="full_name" name="full_name" value="{{ user.full_name }}" required>
+                    </div>
+                    
+                    <div class="row">
+                        <div class="col-md-6 mb-3">
+                            <label for="role" class="form-label">Rol <span class="text-danger">*</span></label>
+                            <select class="form-select" id="role" name="role" required onchange="toggleClassField()">
+                                <option value="director" {% if user.role == 'director' %}selected{% endif %}>Direktor</option>
+                                <option value="teacher" {% if user.role == 'teacher' %}selected{% endif %}>Mugallym</option>
+                                <option value="student" {% if user.role == 'student' %}selected{% endif %}>Okuwçy</option>
+                                <option value="parent" {% if user.role == 'parent' %}selected{% endif %}>Ene-ata</option>
+                            </select>
+                        </div>
+                        
+                        <div class="col-md-6 mb-3" id="class_field" {% if user.role != 'student' %}style="display: none;"{% endif %}>
+                            <label for="class_id" class="form-label">Synp</label>
+                            <select class="form-select" id="class_id" name="class_id">
+                                <option value="">Saýlaň...</option>
+                                {% for class in classes %}
+                                <option value="{{ class.id }}" {% if user.class_id == class.id %}selected{% endif %}>{{ class.name }}</option>
+                                {% endfor %}
+                            </select>
+                        </div>
+                    </div>
+                    
+                    <div class="alert alert-warning">
+                        <i class="bi bi-exclamation-triangle-fill"></i> <strong>Üns:</strong> Roly üýtgetmek ulanyjynyň ähli hukuklaryny üýtgeder.
+                    </div>
+                    
+                    <div class="d-flex gap-2">
+                        <button type="submit" class="btn btn-primary">
+                            <i class="bi bi-check-circle"></i> Üýtgetmeleri Ýatda Saklamak
+                        </button>
+                        <a href="{{ url_for('director_users') }}" class="btn btn-secondary">
+                            <i class="bi bi-x-circle"></i> Ýatyrmak
+                        </a>
+                    </div>
+                </form>
+            </div>
+        </div>
+        
+        <div class="card mt-3">
+            <div class="card-header bg-danger text-white">
+                <i class="bi bi-trash-fill"></i> Howply Zona
+            </div>
+            <div class="card-body">
+                <p><strong>Ulanyjyny öçürmek</strong></p>
+                <p class="text-muted">Bu hereket yzyna gaýtaryp bolmaýar. Ulanyjynyň ähli maglumatlary öçüriler.</p>
+                <form method="POST" action="{{ url_for('director_delete_user', user_id=user.id) }}" onsubmit="return confirm('Hakykatdanam bu ulanyjyny öçürmek isleýärsiňizmi? Bu hereket yzyna gaýtaryp bolmaýar!');">
+                    <button type="submit" class="btn btn-danger">
+                        <i class="bi bi-trash"></i> Ulanyjyny Öçürmek
+                    </button>
+                </form>
+            </div>
+        </div>
+    </div>
+</div>
+
+<script>
+function toggleClassField() {
+    const role = document.getElementById('role').value;
+    const classField = document.getElementById('class_field');
+    
+    if (role === 'student') {
+        classField.style.display = 'block';
+        document.getElementById('class_id').required = true;
+    } else {
+        classField.style.display = 'none';
+        document.getElementById('class_id').required = false;
+    }
+}
+</script>
+{% endblock %}

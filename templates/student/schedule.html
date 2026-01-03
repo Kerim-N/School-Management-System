@@ -1,0 +1,113 @@
+{% extends "base.html" %}
+
+{% block title %}Meniň Ders Tertibim - Okuwçy{% endblock %}
+
+{% block page_title %}Meniň Ders Tertibim{% endblock %}
+
+{% block content %}
+<div class="card">
+    <div class="card-header">
+        <i class="bi bi-calendar-week-fill"></i> Hepdelik Ders Tertibi
+    </div>
+    <div class="card-body">
+        <div class="table-responsive">
+            <table class="table table-bordered table-hover text-center align-middle">
+                <thead class="table-light">
+                    <tr>
+                        <th style="width: 80px;">№</th>
+                        <th style="width: 100px;">Wagt</th>
+                        {% set today = ['Monday', 'Tuesday', 'Wednesday', 'Thursday', 'Friday', 'Saturday', 'Sunday'][now().weekday()] %}
+                        {% for day in days %}
+                        <th class="{% if day == today %}table-primary{% endif %}">
+                            {% if day == 'Monday' %}Duşenbe{% endif %}
+                            {% if day == 'Tuesday' %}Sişenbe{% endif %}
+                            {% if day == 'Wednesday' %}Çarşenbe{% endif %}
+                            {% if day == 'Thursday' %}Penşenbe{% endif %}
+                            {% if day == 'Friday' %}Anna{% endif %}
+                            {% if day == 'Saturday' %}Şenbe{% endif %}
+                        </th>
+                        {% endfor %}
+                    </tr>
+                </thead>
+                <tbody>
+                    {% for i in range(1, 9) %}
+                    <tr>
+                        <td><strong>{{ i }}</strong></td>
+                        <td class="text-muted small">
+                            {% set time_displayed = false %}
+                            {% for day in days %}
+                                {% for schedule in schedule_by_day[day] %}
+                                    {% if schedule.lesson_number == i and not time_displayed %}
+                                        {{ schedule.start_time }} - {{ schedule.end_time }}
+                                        {% set time_displayed = true %}
+                                    {% endif %}
+                                {% endfor %}
+                            {% endfor %}
+                            {% if not time_displayed %}
+                                -
+                            {% endif %}
+                        </td>
+
+                        {% for day in days %}
+                        <td class="{% if day == today %}table-primary{% endif %}">
+                            {% set found = false %}
+                            {% for schedule in schedule_by_day[day] %}
+                                {% if schedule.lesson_number == i %}
+                                    {% set found = true %}
+                                    <div class="bg-success text-white p-2 rounded">
+                                        <strong>{{ schedule.subject.name }}</strong><br>
+                                        <small>{{ schedule.subject.teacher.full_name }}</small>
+                                    </div>
+                                {% endif %}
+                            {% endfor %}
+                            {% if not found %}
+                                <span class="text-muted">-</span>
+                            {% endif %}
+                        </td>
+                        {% endfor %}
+                    </tr>
+                    {% endfor %}
+                </tbody>
+            </table>
+        </div>
+    </div>
+</div>
+
+<div class="card mt-3">
+    <div class="card-header">
+        <i class="bi bi-clock-history"></i> Şu gün
+    </div>
+    <div class="card-body">
+        {% set today = ['Monday', 'Tuesday', 'Wednesday', 'Thursday', 'Friday', 'Saturday', 'Sunday'][now().weekday()] %}
+        {% if schedule_by_day[today] %}
+            <h6>Şu günki dersler:</h6>
+            <div class="list-group">
+                {% for schedule in schedule_by_day[today]|sort(attribute='lesson_number') %}
+                <div class="list-group-item">
+                    <div class="d-flex justify-content-between">
+                        <div>
+                            <span class="badge bg-primary">{{ schedule.lesson_number }}-nji ders</span>
+                            <strong class="ms-2">{{ schedule.subject.name }}</strong>
+                        </div>
+                        <span class="text-muted">{{ schedule.start_time }} - {{ schedule.end_time }}</span>
+                    </div>
+                    <small class="text-muted">Mugallym: {{ schedule.subject.teacher.full_name }}</small>
+                </div>
+                {% endfor %}
+            </div>
+        {% else %}
+            <p class="text-muted mb-0">Şu gün ders ýok</p>
+        {% endif %}
+    </div>
+</div>
+
+<style>
+.table td {
+    vertical-align: middle;
+    padding: 0.5rem;
+}
+.table-primary {
+    background-color: #e7f1ff !important;
+}
+</style>
+{% endblock %}

@@ -1,0 +1,195 @@
+{% extends "base.html" %}
+
+{% block title %}Bahalar - Mugallym{% endblock %}
+
+{% block page_title %}Baha Goýmak{% endblock %}
+
+{% block content %}
+<div class="row">
+    <div class="col-md-4">
+        <div class="card">
+            <div class="card-header">
+                <i class="bi bi-plus-circle-fill"></i> Täze Baha Goýmak
+            </div>
+            <div class="card-body">
+                {% if subjects and students %}
+                    <form method="POST" action="{{ url_for('teacher_grades') }}">
+                        <div class="mb-3">
+                            <label for="student_id" class="form-label">Okuwçy <span class="text-danger">*</span></label>
+                            <select class="form-select" id="student_id" name="student_id" required>
+                                <option value="">Saýlaň...</option>
+                                {% for student in students %}
+                                <option value="{{ student.id }}">{{ student.full_name }} - {{ student.student_class.name if student.student_class else '' }}</option>
+                                {% endfor %}
+                            </select>
+                        </div>
+                        
+                        <div class="mb-3">
+                            <label for="subject_id" class="form-label">Ders <span class="text-danger">*</span></label>
+                            <select class="form-select" id="subject_id" name="subject_id" required>
+                                <option value="">Saýlaň...</option>
+                                {% for subject in subjects %}
+                                <option value="{{ subject.id }}">{{ subject.name }} ({{ subject.class_obj.name }})</option>
+                                {% endfor %}
+                            </select>
+                        </div>
+                        
+                        <div class="mb-3">
+                            <label for="grade" class="form-label">Baha (1-5) <span class="text-danger">*</span></label>
+                            <input type="number" class="form-control" id="grade" name="grade" min="1" max="5" required>
+                            <small class="text-muted">1 - iň pes, 5 - iň ýokary</small>
+                        </div>
+                        
+                        <button type="submit" class="btn btn-primary w-100">
+                            <i class="bi bi-check-circle"></i> Baha Goýmak
+                        </button>
+                    </form>
+                {% else %}
+                    <div class="alert alert-warning">
+                        <i class="bi bi-exclamation-triangle"></i> Baha goýmak üçin dersleňiz we okuwçylaryňyz bolmaly.
+                    </div>
+                {% endif %}
+            </div>
+        </div>
+        
+        <div class="card mt-3">
+            <div class="card-header">
+                <i class="bi bi-info-circle"></i> Baha ulgamy
+            </div>
+            <div class="card-body">
+                <ul class="list-unstyled mb-0">
+                    <li><span class="badge bg-success">5</span> - Ajaýyp</li>
+                    <li><span class="badge bg-primary">4</span> - Gowy</li>
+                    <li><span class="badge bg-info">3</span> - Kanagatlanarly</li>
+                    <li><span class="badge bg-warning">2</span> - Pes</li>
+                    <li><span class="badge bg-danger">1</span> - Ýeterlik däl</li>
+                </ul>
+            </div>
+        </div>
+    </div>
+    
+    <div class="col-md-8">
+        <div class="card">
+            <div class="card-header">
+                <i class="bi bi-clipboard-data-fill"></i> Goýlan Bahalar
+            </div>
+            <div class="card-body">
+                {% if all_grades %}
+                    <!-- Filter buttons -->
+                    <div class="mb-3">
+                        <div class="btn-group" role="group">
+                            <button type="button" class="btn btn-sm btn-outline-primary active" onclick="filterGrades('all')">
+                                Ählisi
+                            </button>
+                            {% for subject in subjects %}
+                            <button type="button" class="btn btn-sm btn-outline-primary" onclick="filterGrades('subject-{{ subject.id }}')">
+                                {{ subject.name }}
+                            </button>
+                            {% endfor %}
+                        </div>
+                    </div>
+                    
+                    <div class="table-responsive">
+                        <table class="table table-hover">
+                            <thead>
+                                <tr>
+                                    <th>Okuwçy</th>
+                                    <th>Synp</th>
+                                    <th>Ders</th>
+                                    <th>Baha</th>
+                                    <th>Sene</th>
+                                </tr>
+                            </thead>
+                            <tbody id="gradesTableBody">
+                                {% for grade in all_grades %}
+                                <tr class="grade-row" data-subject-id="{{ grade.subject_id }}">
+                                    <td><strong>{{ grade.student.full_name }}</strong></td>
+                                    <td>
+                                        {% if grade.student.student_class %}
+                                            <span class="badge bg-secondary">{{ grade.student.student_class.name }}</span>
+                                        {% endif %}
+                                    </td>
+                                    <td>{{ grade.subject.name }}</td>
+                                    <td>
+                                        {% if grade.grade == 5 %}
+                                            <span class="badge bg-success" style="font-size: 1rem;">5</span>
+                                        {% elif grade.grade == 4 %}
+                                            <span class="badge bg-primary" style="font-size: 1rem;">4</span>
+                                        {% elif grade.grade == 3 %}
+                                            <span class="badge bg-info" style="font-size: 1rem;">3</span>
+                                        {% elif grade.grade == 2 %}
+                                            <span class="badge bg-warning" style="font-size: 1rem;">2</span>
+                                        {% else %}
+                                            <span class="badge bg-danger" style="font-size: 1rem;">{{ grade.grade }}</span>
+                                        {% endif %}
+                                    </td>
+                                    <td>
+                                        <i class="bi bi-calendar"></i> {{ grade.date.strftime('%d.%m.%Y') }}
+                                    </td>
+                                </tr>
+                                {% endfor %}
+                            </tbody>
+                        </table>
+                    </div>
+                {% else %}
+                    <div class="text-center py-5">
+                        <i class="bi bi-clipboard-x" style="font-size: 4rem; color: #cbd5e1;"></i>
+                        <p class="text-muted mt-3">Entek baha goýulmady</p>
+                    </div>
+                {% endif %}
+            </div>
+        </div>
+        
+        {% if all_grades %}
+        <div class="row mt-3">
+            <div class="col-md-6">
+                <div class="card">
+                    <div class="card-body">
+                        <h6 class="text-muted mb-2">Jemi Goýlan Bahalar</h6>
+                        <h2 class="mb-0">{{ all_grades|length }}</h2>
+                    </div>
+                </div>
+            </div>
+            
+            <div class="col-md-6">
+                <div class="card">
+                    <div class="card-body">
+                        <h6 class="text-muted mb-2">Ortaça Baha</h6>
+                        <h2 class="mb-0">
+                            {% set total = all_grades|sum(attribute='grade') %}
+                            {% set avg = (total / all_grades|length)|round(2) %}
+                            {{ avg }}
+                        </h2>
+                    </div>
+                </div>
+            </div>
+        </div>
+        {% endif %}
+    </div>
+</div>
+
+<script>
+function filterGrades(filter) {
+    const rows = document.querySelectorAll('.grade-row');
+    const buttons = document.querySelectorAll('.btn-group button');
+    
+    // Update active button
+    buttons.forEach(btn => btn.classList.remove('active'));
+    event.target.classList.add('active');
+    
+    // Filter rows
+    if (filter === 'all') {
+        rows.forEach(row => row.style.display = '');
+    } else {
+        const subjectId = filter.replace('subject-', '');
+        rows.forEach(row => {
+            if (row.getAttribute('data-subject-id') === subjectId) {
+                row.style.display = '';
+            } else {
+                row.style.display = 'none';
+            }
+        });
+    }
+}
+</script>
+{% endblock %}

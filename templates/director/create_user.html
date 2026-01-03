@@ -1,0 +1,91 @@
+{% extends "base.html" %}
+
+{% block title %}Täze Ulanyjy - Direktor{% endblock %}
+
+{% block page_title %}Täze Ulanyjy Döretmek{% endblock %}
+
+{% block content %}
+<div class="row">
+    <div class="col-md-8 mx-auto">
+        <div class="card">
+            <div class="card-header">
+                <i class="bi bi-person-plus-fill"></i> Täze Ulanyjy Goşmak
+            </div>
+            <div class="card-body">
+                <form method="POST" action="{{ url_for('director_create_user') }}">
+                    <div class="row">
+                        <div class="col-md-6 mb-3">
+                            <label for="username" class="form-label">Ulanyjy ady <span class="text-danger">*</span></label>
+                            <input type="text" class="form-control" id="username" name="username" required>
+                            <small class="text-muted">Giriş üçin ulanylýar (mysal: ahmet_123)</small>
+                        </div>
+                        
+                        <div class="col-md-6 mb-3">
+                            <label for="password" class="form-label">Parol <span class="text-danger">*</span></label>
+                            <input type="text" class="form-control" id="password" name="password" required>
+                            <small class="text-muted">Azyndan 6 simwol</small>
+                        </div>
+                    </div>
+                    
+                    <div class="mb-3">
+                        <label for="full_name" class="form-label">Doly ady <span class="text-danger">*</span></label>
+                        <input type="text" class="form-control" id="full_name" name="full_name" required placeholder="Ahmet Öwezow">
+                    </div>
+                    
+                    <div class="row">
+                        <div class="col-md-6 mb-3">
+                            <label for="role" class="form-label">Rol <span class="text-danger">*</span></label>
+                            <select class="form-select" id="role" name="role" required onchange="toggleClassField()">
+                                <option value="">Saýlaň...</option>
+                                <option value="director">Direktor</option>
+                                <option value="teacher">Mugallym</option>
+                                <option value="student">Okuwçy</option>
+                                <option value="parent">Ene-ata</option>
+                            </select>
+                        </div>
+                        
+                        <div class="col-md-6 mb-3" id="class_field" style="display: none;">
+                            <label for="class_id" class="form-label">Synp</label>
+                            <select class="form-select" id="class_id" name="class_id">
+                                <option value="">Saýlaň...</option>
+                                {% for class in classes %}
+                                <option value="{{ class.id }}">{{ class.name }}</option>
+                                {% endfor %}
+                            </select>
+                            <small class="text-muted">Diňe okuwçylar üçin hökmany</small>
+                        </div>
+                    </div>
+                    
+                    <div class="alert alert-info">
+                        <i class="bi bi-info-circle-fill"></i> <strong>Bellik:</strong> Okuwçy üçin synp hökmany bolmaly. Mugallym we direktor üçin synp gerek däl.
+                    </div>
+                    
+                    <div class="d-flex gap-2">
+                        <button type="submit" class="btn btn-primary">
+                            <i class="bi bi-check-circle"></i> Döretmek
+                        </button>
+                        <a href="{{ url_for('director_users') }}" class="btn btn-secondary">
+                            <i class="bi bi-x-circle"></i> Ýatyrmak
+                        </a>
+                    </div>
+                </form>
+            </div>
+        </div>
+    </div>
+</div>
+
+<script>
+function toggleClassField() {
+    const role = document.getElementById('role').value;
+    const classField = document.getElementById('class_field');
+    
+    if (role === 'student') {
+        classField.style.display = 'block';
+        document.getElementById('class_id').required = true;
+    } else {
+        classField.style.display = 'none';
+        document.getElementById('class_id').required = false;
+    }
+}
+</script>
+{% endblock %}

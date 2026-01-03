@@ -1,0 +1,181 @@
+<div class="card border-primary" id="liveLessonWidget">
+    <div class="card-header bg-primary text-white">
+        <i class="bi bi-broadcast"></i> <span id="lessonStatus">Häzirki Ders</span>
+        <button class="btn btn-sm btn-light float-end" onclick="toggleSound()" id="soundBtn">
+            <i class="bi bi-volume-up"></i>
+        </button>
+    </div>
+    <div class="card-body">
+        <div id="currentLesson" style="display: none;">
+            <div class="d-flex justify-content-between align-items-center mb-2">
+                <h5 class="mb-0" id="lessonName"></h5>
+                <span class="badge bg-success" id="lessonTime"></span>
+            </div>
+            <p class="mb-2 text-muted" id="lessonTeacher"></p>
+            <div class="progress" style="height: 5px;">
+                <div class="progress-bar bg-success" id="lessonProgress" style="width: 0%"></div>
+            </div>
+        </div>
+        
+        <div id="breakTime" style="display: none;">
+            <div class="text-center">
+                <i class="bi bi-cup-hot-fill" style="font-size: 3rem; color: var(--warning-color);"></i>
+                <h5 class="mt-2">Arakesme Wagty</h5>
+                <p class="text-muted mb-2">Indiki ders: <strong id="nextLessonName"></strong></p>
+                <p class="text-muted">Başlanýar: <span id="nextLessonTime"></span></p>
+            </div>
+        </div>
+        
+        <div id="nextLessonHomework" style="display: none;" class="alert alert-info mt-3">
+            <h6><i class="bi bi-house-door"></i> Öý Işi:</h6>
+            <p class="mb-0" id="homeworkText"></p>
+        </div>
+        
+        <div id="noLesson" style="display: none;">
+            <p class="text-muted text-center mb-0">Şu gün ders ýok</p>
+        </div>
+        
+        {% if upcoming_holidays %}
+        <div class="alert alert-warning mt-3">
+            <h6><i class="bi bi-calendar-event"></i> Ýakynlaşýan Baýramçylyk:</h6>
+            {% for holiday in upcoming_holidays %}
+            <p class="mb-1">
+                <strong>{{ holiday.name }}</strong><br>
+                <small>{{ holiday.start_date.strftime('%d.%m.%Y') }} - {{ holiday.end_date.strftime('%d.%m.%Y') }}</small>
+            </p>
+            {% endfor %}
+        </div>
+        {% endif %}
+    </div>
+</div>
+
+<script>
+// Schedule data from server
+const schedule = {{ current_schedule|tojson|safe }};
+let soundEnabled = true;
+let lastAnnouncedLesson = null;
+
+function getCurrentTime() {
+    const now = new Date();
+    return now.getHours() * 60 + now.getMinutes(); // Minutes since midnight
+}
+
+function timeToMinutes(timeStr) {
+    const [hours, minutes] = timeStr.split(':').map(Number);
+    return hours * 60 + minutes;
+}
+
+function speakText(text) {
+    if (!soundEnabled || !('speechSynthesis' in window)) return;
+    
+    // Cancel any ongoing speech
+    window.speechSynthesis.cancel();
+    
+    const utterance = new SpeechSynthesisUtterance(text);
+    utterance.lang = 'tr-TR'; // Turkish
+    utterance.rate = 0.9;
+    utterance.pitch = 1;
+    window.speechSynthesis.speak(utterance);
+}
+
+function updateLessonWidget() {
+    const currentTime = getCurrentTime();
+    const currentLesson = document.getElementById('currentLesson');
+    const breakTime = document.getElementById('breakTime');
+    const noLesson = document.getElementById('noLesson');
+    const nextHomework = document.getElementById('nextLessonHomework');
+    const statusText = document.getElementById('lessonStatus');
+    
+    // Hide all
+    currentLesson.style.display = 'none';
+    breakTime.style.display = 'none';
+    noLesson.style.display = 'none';
+    nextHomework.style.display = 'none';
+    
+    if (!schedule || schedule.length === 0) {
+        noLesson.style.display = 'block';
+        return;
+    }
+    
+    let foundCurrent = false;
+    let nextLesson = null;
+    
+    for (let i = 0; i < schedule.length; i++) {
+        const lesson = schedule[i];
+        const startTime = timeToMinutes(lesson.start_time);
+        const endTime = timeToMinutes(lesson.end_time);
+        
+        // Current lesson
+        if (currentTime >= startTime && currentTime < endTime) {
+            foundCurrent = true;
+            currentLesson.style.display = 'block';
+            statusText.textContent = 'Häzirki Ders';
+            
+            document.getElementById('lessonName').textContent = lesson.subject.name;
+            document.getElementById('lessonTime').textContent = `${lesson.start_time} - ${lesson.end_time}`;
+            document.getElementById('lessonTeacher').textContent = lesson.subject.teacher.full_name;
+            
+            // Progress bar
+            const totalMinutes = endTime - startTime;
+            const elapsedMinutes = currentTime - startTime;
+            const progress = (elapsedMinutes / totalMinutes) * 100;
+            document.getElementById('lessonProgress').style.width = progress + '%';
+            
+            // Announce lesson start (once)
+            if (lastAnnouncedLesson !== lesson.id) {
+                speakText(`${lesson.subject.name} dersi başlandy`);
+                lastAnnouncedLesson = lesson.id;
+            }
+            
+            // Show next lesson homework if exists
+            if (i < schedule.length - 1) {
+                nextLesson = schedule[i + 1];
+                // Here you would fetch homework from API
+                // For now, just show next lesson info
+            }
+            
+            break;
+        }
+        
+        // Find next lesson
+        if (currentTime < startTime && !nextLesson) {
+            nextLesson = lesson;
+        }
+    }
+    
+    // Break time
+    if (!foundCurrent && nextLesson) {
+        breakTime.style.display = 'block';
+        statusText.textContent = 'Arakesme';
+        
+        document.getElementById('nextLessonName').textContent = nextLesson.subject.name;
+        document.getElementById('nextLessonTime').textContent = nextLesson.start_time;
+        
+        // Announce break (once per break)
+        const breakKey = `break-${nextLesson.id}`;
+        if (lastAnnouncedLesson !== breakKey) {
+            speakText('Arakesme wagty. Indiki ders: ' + nextLesson.subject.name);
+            lastAnnouncedLesson = breakKey;
+        }
+    }
+    
+    if (!foundCurrent && !nextLesson) {
+        noLesson.style.display = 'block';
+        statusText.textContent = 'Dersler Gutardy';
+    }
+}
+
+function toggleSound() {
+    soundEnabled = !soundEnabled;
+    const btn = document.getElementById('soundBtn');
+    btn.innerHTML = soundEnabled ? '<i class="bi bi-volume-up"></i>' : '<i class="bi bi-volume-mute"></i>';
+    
+    if (soundEnabled) {
+        speakText('Ses açyldy');
+    }
+}
+
+// Update every 30 seconds
+updateLessonWidget();
+setInterval(updateLessonWidget, 30000);
+</script>

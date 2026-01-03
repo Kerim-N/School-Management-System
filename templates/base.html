@@ -1,0 +1,424 @@
+<!DOCTYPE html>
+<html lang="tk">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>{% block title %}ASE - Mekdep Dolandyryş Ulgamy{% endblock %}</title>
+    
+    <!-- Bootstrap 5 CSS -->
+    <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/css/bootstrap.min.css" rel="stylesheet">
+    <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/bootstrap-icons@1.10.0/font/bootstrap-icons.css">
+    
+    <style>
+        :root {
+            --primary-color: #2563eb;
+            --secondary-color: #64748b;
+            --success-color: #10b981;
+            --danger-color: #ef4444;
+            --warning-color: #f59e0b;
+            --info-color: #3b82f6;
+            --light-bg: #f8fafc;
+            --sidebar-bg: #ffffff;
+            --text-dark: #1e293b;
+        }
+        
+        body {
+            font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+            background-color: var(--light-bg);
+            color: var(--text-dark);
+        }
+        
+        .sidebar {
+            min-height: 100vh;
+            background-color: var(--sidebar-bg);
+            box-shadow: 2px 0 10px rgba(0,0,0,0.05);
+            position: fixed;
+            left: 0;
+            top: 0;
+            width: 260px;
+            z-index: 100;
+        }
+        
+        .sidebar-header {
+            padding: 2rem 1.5rem;
+            border-bottom: 1px solid #e2e8f0;
+        }
+        
+        .sidebar-header h4 {
+            color: var(--primary-color);
+            font-weight: 700;
+            margin: 0;
+        }
+        
+        .sidebar-nav {
+            padding: 1rem 0;
+        }
+        
+        .sidebar-nav a {
+            display: flex;
+            align-items: center;
+            padding: 0.75rem 1.5rem;
+            color: var(--text-dark);
+            text-decoration: none;
+            transition: all 0.3s;
+        }
+        
+        .sidebar-nav a:hover {
+            background-color: #f1f5f9;
+            color: var(--primary-color);
+        }
+        
+        .sidebar-nav a.active {
+            background-color: #e0e7ff;
+            color: var(--primary-color);
+            border-right: 3px solid var(--primary-color);
+        }
+        
+        .sidebar-nav i {
+            margin-right: 0.75rem;
+            font-size: 1.1rem;
+        }
+        
+        .main-content {
+            margin-left: 260px;
+            padding: 2rem;
+        }
+        
+        .top-navbar {
+            background-color: #ffffff;
+            padding: 1rem 2rem;
+            margin: -2rem -2rem 2rem -2rem;
+            box-shadow: 0 2px 10px rgba(0,0,0,0.05);
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+        }
+        
+        .user-info {
+            display: flex;
+            align-items: center;
+            gap: 1rem;
+        }
+        
+        .user-avatar {
+            width: 40px;
+            height: 40px;
+            border-radius: 50%;
+            background-color: var(--primary-color);
+            color: white;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            font-weight: 600;
+        }
+        
+        .card {
+            border: none;
+            box-shadow: 0 2px 10px rgba(0,0,0,0.05);
+            border-radius: 12px;
+            margin-bottom: 1.5rem;
+        }
+        
+        .card-header {
+            background-color: #ffffff;
+            border-bottom: 1px solid #e2e8f0;
+            padding: 1.25rem 1.5rem;
+            font-weight: 600;
+        }
+        
+        .stat-card {
+            background: linear-gradient(135deg, var(--primary-color), #1e40af);
+            color: white;
+            border-radius: 12px;
+            padding: 1.5rem;
+            margin-bottom: 1.5rem;
+        }
+        
+        .stat-card.success {
+            background: linear-gradient(135deg, var(--success-color), #059669);
+        }
+        
+        .stat-card.warning {
+            background: linear-gradient(135deg, var(--warning-color), #d97706);
+        }
+        
+        .stat-card.info {
+            background: linear-gradient(135deg, var(--info-color), #2563eb);
+        }
+        
+        .stat-card h3 {
+            font-size: 2.5rem;
+            font-weight: 700;
+            margin-bottom: 0.5rem;
+        }
+        
+        .stat-card p {
+            opacity: 0.9;
+            margin: 0;
+        }
+        
+        .btn-primary {
+            background-color: var(--primary-color);
+            border: none;
+            padding: 0.5rem 1.5rem;
+            border-radius: 8px;
+        }
+        
+        .btn-primary:hover {
+            background-color: #1e40af;
+        }
+        
+        .table {
+            background-color: white;
+        }
+        
+        .table thead {
+            background-color: #f8fafc;
+        }
+        
+        .badge {
+            padding: 0.35rem 0.75rem;
+            border-radius: 6px;
+            font-weight: 500;
+        }
+        
+        .mobile-menu-btn {
+            display: none;
+            position: fixed;
+            top: 1rem;
+            left: 1rem;
+            z-index: 1001;
+            background: var(--primary-color);
+            color: white;
+            border: none;
+            border-radius: 8px;
+            padding: 0.5rem 1rem;
+            box-shadow: 0 2px 10px rgba(0,0,0,0.2);
+        }
+        
+        @media (max-width: 768px) {
+            .mobile-menu-btn {
+                display: block;
+            }
+            
+            .sidebar {
+                left: -260px;
+                transition: left 0.3s;
+                z-index: 1000;
+            }
+            
+            .sidebar.active {
+                left: 0;
+            }
+            
+            .main-content {
+                margin-left: 0;
+                padding: 1rem;
+            }
+            
+            .top-navbar {
+                padding: 1rem;
+                margin: -1rem -1rem 1rem -1rem;
+            }
+            
+            .stat-card {
+                margin-bottom: 1rem;
+            }
+            
+            .card {
+                margin-bottom: 1rem;
+            }
+            
+            .table {
+                font-size: 0.875rem;
+            }
+            
+            .btn {
+                padding: 0.5rem 1rem;
+                font-size: 0.875rem;
+            }
+        }
+        
+        @media (max-width: 480px) {
+            .user-info {
+                display: none;
+            }
+            
+            .top-navbar h5 {
+                font-size: 1rem;
+            }
+            
+            .stat-card h3 {
+                font-size: 2rem;
+            }
+        }
+    </style>
+    
+    {% block extra_css %}{% endblock %}
+</head>
+<body>
+    {% if current_user.is_authenticated %}
+    <!-- Mobile Menu Button -->
+    <button class="mobile-menu-btn" onclick="toggleSidebar()">
+        <i class="bi bi-list"></i> Menu
+    </button>
+    
+    <!-- Sidebar -->
+    <div class="sidebar" id="sidebar">
+        <div class="sidebar-header">
+            <!-- <h4><i class="bi bi-mortarboard-fill"></i> EDMS</h4> -->
+            <center><h4><img src="../static/images/Akylly Synp_croped.png" alt="ASE Logo" style="width: 150px; height: 150px; margin-bottom: -2rem;"></h4></center>
+            <!-- <small class="text-muted">Mekdep Dolandyryş Ulgamy</small> -->
+        </div>
+        
+        <nav class="sidebar-nav">
+            {% if current_user.role == 'director' %}
+                <a href="{{ url_for('director_dashboard') }}" class="{% if request.endpoint == 'director_dashboard' %}active{% endif %}">
+                    <i class="bi bi-speedometer2"></i> Dolandyryş paneli
+                </a>
+                <a href="{{ url_for('director_users') }}" class="{% if 'users' in request.endpoint %}active{% endif %}">
+                    <i class="bi bi-people"></i> Ulanyjylar
+                </a>
+                <a href="{{ url_for('director_classes') }}" class="{% if 'classes' in request.endpoint %}active{% endif %}">
+                    <i class="bi bi-grid-3x3"></i> Synplar
+                </a>
+                <a href="{{ url_for('director_subjects') }}" class="{% if 'subject' in request.endpoint %}active{% endif %}">
+                    <i class="bi bi-book"></i> Dersler
+                </a>
+                <a href="{{ url_for('director_schedules') }}" class="{% if 'schedule' in request.endpoint %}active{% endif %}">
+                    <i class="bi bi-calendar-week"></i> Ders Tertibi
+                </a>
+                <a href="{{ url_for('director_parents') }}" class="{% if 'parent' in request.endpoint %}active{% endif %}">
+                    <i class="bi bi-people-fill"></i> Ene-atalar
+                </a>
+                <a href="{{ url_for('director_holidays') }}" class="{% if 'holiday' in request.endpoint %}active{% endif %}">
+                    <i class="bi bi-calendar-event"></i> Baýramçylyklar
+                </a>
+                <a href="{{ url_for('director_notifications') }}" class="{% if 'notification' in request.endpoint %}active{% endif %}">
+                    <i class="bi bi-bell"></i> Bildirimler
+                </a>
+            {% elif current_user.role == 'teacher' %}
+                <a href="{{ url_for('teacher_dashboard') }}" class="{% if request.endpoint == 'teacher_dashboard' %}active{% endif %}">
+                    <i class="bi bi-speedometer2"></i> Dolandyryş paneli
+                </a>
+                <a href="{{ url_for('teacher_students') }}" class="{% if 'students' in request.endpoint %}active{% endif %}">
+                    <i class="bi bi-people"></i> Okuwçylar
+                </a>
+                <a href="{{ url_for('teacher_schedule') }}" class="{% if 'schedule' in request.endpoint %}active{% endif %}">
+                    <i class="bi bi-calendar-week"></i> Ders Tertibi
+                </a>
+                <a href="{{ url_for('teacher_attendance') }}" class="{% if 'attendance' in request.endpoint %}active{% endif %}">
+                    <i class="bi bi-calendar-check"></i> Gatnaşyk
+                </a>
+                <a href="{{ url_for('teacher_grades') }}" class="{% if 'grades' in request.endpoint %}active{% endif %}">
+                    <i class="bi bi-clipboard-data"></i> Bahalar
+                </a>
+                <a href="{{ url_for('teacher_lesson_plans') }}" class="{% if 'lesson' in request.endpoint %}active{% endif %}">
+                    <i class="bi bi-book"></i> Okuw meýilnamasy
+                </a>
+                <a href="{{ url_for('teacher_notifications') }}" class="{% if 'notification' in request.endpoint %}active{% endif %}">
+                    <i class="bi bi-bell"></i> Bildirimler
+                </a>
+            {% elif current_user.role == 'student' %}
+                <a href="{{ url_for('student_dashboard') }}" class="{% if request.endpoint == 'student_dashboard' %}active{% endif %}">
+                    <i class="bi bi-speedometer2"></i> Dolandyryş paneli
+                </a>
+                <a href="{{ url_for('student_schedule') }}" class="{% if 'schedule' in request.endpoint %}active{% endif %}">
+                    <i class="bi bi-calendar-week"></i> Ders Tertibi
+                </a>
+                <a href="{{ url_for('student_grades') }}" class="{% if 'grades' in request.endpoint %}active{% endif %}">
+                    <i class="bi bi-clipboard-data"></i> Meniň bahalarym
+                </a>
+                <a href="{{ url_for('student_attendance') }}" class="{% if 'attendance' in request.endpoint %}active{% endif %}">
+                    <i class="bi bi-calendar-check"></i> Meniň gatnaşygym
+                </a>
+                <a href="{{ url_for('student_lesson_plans') }}" class="{% if 'lesson' in request.endpoint %}active{% endif %}">
+                    <i class="bi bi-book"></i> Okuw meýilnamasy
+                </a>
+                <a href="{{ url_for('student_notifications') }}" class="{% if 'notification' in request.endpoint %}active{% endif %}">
+                    <i class="bi bi-bell"></i> Bildirimler
+                    {% set unread = current_user.received_notifications|selectattr('is_read', 'equalto', False)|list|length %}
+                    {% if unread > 0 %}
+                        <span class="badge bg-danger rounded-pill ms-auto">{{ unread }}</span>
+                    {% endif %}
+                </a>
+            {% elif current_user.role == 'parent' %}
+                <a href="{{ url_for('parent_dashboard') }}" class="{% if request.endpoint == 'parent_dashboard' %}active{% endif %}">
+                    <i class="bi bi-speedometer2"></i> Dolandyryş paneli
+                </a>
+            {% endif %}
+            
+            <hr style="margin: 1rem 1.5rem; opacity: 0.2;">
+            
+            <a href="{{ url_for('logout') }}">
+                <i class="bi bi-box-arrow-right"></i> Çykmak
+            </a>
+        </nav>
+    </div>
+    
+    <!-- Main Content -->
+    <div class="main-content">
+        <div class="top-navbar">
+            <div>
+                <h5 class="mb-0">{% block page_title %}Hoş geldiňiz{% endblock %}</h5>
+            </div>
+            <div class="user-info">
+                <div class="user-avatar">
+                    {{ current_user.full_name[0].upper() }}
+                </div>
+                <div>
+                    <div style="font-weight: 600;">{{ current_user.full_name }}</div>
+                    <small class="text-muted">
+                        {% if current_user.role == 'director' %}Müdir{% endif %}
+                        {% if current_user.role == 'teacher' %}Mugallym{% endif %}
+                        {% if current_user.role == 'student' %}Okuwçy{% endif %}
+                        {% if current_user.role == 'parent' %}Ene-ata{% endif %}
+                    </small>
+                </div>
+            </div>
+        </div>
+        
+        <!-- Flash Messages -->
+        {% with messages = get_flashed_messages(with_categories=true) %}
+            {% if messages %}
+                {% for category, message in messages %}
+                    <div class="alert alert-{{ category }} alert-dismissible fade show" role="alert">
+                        {{ message }}
+                        <button type="button" class="btn-close" data-bs-dismiss="alert"></button>
+                    </div>
+                {% endfor %}
+            {% endif %}
+        {% endwith %}
+        
+        {% block content %}{% endblock %}
+    </div>
+    {% else %}
+        {% block login_content %}{% endblock %}
+    {% endif %}
+    
+    <!-- Bootstrap 5 JS -->
+    <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/js/bootstrap.bundle.min.js"></script>
+    
+    <script>
+    // Mobile sidebar toggle
+    function toggleSidebar() {
+        const sidebar = document.getElementById('sidebar');
+        sidebar.classList.toggle('active');
+    }
+    
+    // Close sidebar when clicking outside on mobile
+    document.addEventListener('click', function(event) {
+        const sidebar = document.getElementById('sidebar');
+        const menuBtn = document.querySelector('.mobile-menu-btn');
+        
+        if (window.innerWidth <= 768) {
+            if (!sidebar.contains(event.target) && !menuBtn.contains(event.target)) {
+                sidebar.classList.remove('active');
+            }
+        }
+    });
+    </script>
+    
+    {% block extra_js %}{% endblock %}
+</body>
+</html>

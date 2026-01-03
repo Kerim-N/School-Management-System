@@ -1,0 +1,101 @@
+{% extends "base.html" %}
+
+{% block title %}Synplar - Direktor{% endblock %}
+
+{% block page_title %}Synplary Dolandyrmak{% endblock %}
+
+{% block content %}
+<div class="row">
+    <div class="col-md-8">
+        <div class="card">
+            <div class="card-header">
+                <i class="bi bi-grid-3x3-gap-fill"></i> Ähli Synplar
+            </div>
+            <div class="card-body">
+                <div class="table-responsive">
+                    <table class="table table-hover">
+                        <thead>
+                            <tr>
+                                <th>ID</th>
+                                <th>Synp ady</th>
+                                <th>Synp ýolbaşçysy</th>
+                                <th>Okuwçy sany</th>
+                                <th>Hereketler</th>
+                            </tr>
+                        </thead>
+                        <tbody>
+                            {% for class in classes %}
+                            <tr>
+                                <td>{{ class.id }}</td>
+                                <td><strong>{{ class.name }}</strong></td>
+                                <td>
+                                    {% if class.teacher %}
+                                        {{ class.teacher.full_name }}
+                                    {% else %}
+                                        <span class="text-muted">Bellenmedi</span>
+                                    {% endif %}
+                                </td>
+                                <td>
+                                    <span class="badge bg-primary">{{ class.students|length }} okuwçy</span>
+                                </td>
+                                <td>
+                                    <form method="POST" action="{{ url_for('director_delete_class', class_id=class.id) }}" style="display: inline;" onsubmit="return confirm('Bu synpy öçürmek isleýärsiňizmi?');">
+                                        <button type="submit" class="btn btn-sm btn-outline-danger">
+                                            <i class="bi bi-trash"></i>
+                                        </button>
+                                    </form>
+                                </td>
+                            </tr>
+                            {% else %}
+                            <tr>
+                                <td colspan="5" class="text-center text-muted">Synp tapylmady</td>
+                            </tr>
+                            {% endfor %}
+                        </tbody>
+                    </table>
+                </div>
+            </div>
+        </div>
+    </div>
+    
+    <div class="col-md-4">
+        <div class="card">
+            <div class="card-header">
+                <i class="bi bi-plus-circle-fill"></i> Täze Synp Döretmek
+            </div>
+            <div class="card-body">
+                <form method="POST" action="{{ url_for('director_create_class') }}">
+                    <div class="mb-3">
+                        <label for="name" class="form-label">Synp ady <span class="text-danger">*</span></label>
+                        <input type="text" class="form-control" id="name" name="name" required placeholder="mysal: 5-A">
+                    </div>
+                    
+                    <div class="mb-3">
+                        <label for="teacher_id" class="form-label">Synp ýolbaşçysy</label>
+                        <select class="form-select" id="teacher_id" name="teacher_id">
+                            <option value="">Saýlaň...</option>
+                            {% for teacher in teachers %}
+                            <option value="{{ teacher.id }}">{{ teacher.full_name }}</option>
+                            {% endfor %}
+                        </select>
+                        <small class="text-muted">Islege görä</small>
+                    </div>
+                    
+                    <button type="submit" class="btn btn-primary w-100">
+                        <i class="bi bi-check-circle"></i> Döretmek
+                    </button>
+                </form>
+            </div>
+        </div>
+        
+        <div class="card mt-3">
+            <div class="card-header">
+                <i class="bi bi-info-circle"></i> Maglumat
+            </div>
+            <div class="card-body">
+                <p class="small mb-0">Synp döredensoň, okuwçylary we dersleri goşup bilersiňiz. Her synp üçin synp ýolbaşçysyny belläň.</p>
+            </div>
+        </div>
+    </div>
+</div>
+{% endblock %}

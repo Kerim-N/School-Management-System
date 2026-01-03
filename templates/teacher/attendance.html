@@ -1,0 +1,135 @@
+{% extends "base.html" %}
+
+{% block title %}Gatnaşyk - Mugallym{% endblock %}
+
+{% block page_title %}Gatnaşyk Bellemek{% endblock %}
+
+{% block content %}
+<div class="card">
+    <div class="card-header">
+        <i class="bi bi-calendar-check-fill"></i> Okuwçylaryň Gatnaşygyny Bellemek
+    </div>
+    <div class="card-body">
+        {% if students %}
+            <form method="POST" action="{{ url_for('teacher_attendance') }}">
+                <div class="row mb-4">
+                    <div class="col-md-4">
+                        <label for="date" class="form-label">Sene <span class="text-danger">*</span></label>
+                        <input type="date" class="form-control" id="date" name="date" value="{{ today }}" required>
+                    </div>
+                </div>
+                
+                <div class="table-responsive">
+                    <table class="table table-bordered">
+                        <thead class="table-light">
+                            <tr>
+                                <th style="width: 50px;">#</th>
+                                <th>Okuwçy</th>
+                                <th>Synp</th>
+                                <th style="width: 200px;">Gatnaşyk</th>
+                            </tr>
+                        </thead>
+                        <tbody>
+                            {% for student in students %}
+                            <tr>
+                                <td>{{ loop.index }}</td>
+                                <td>
+                                    <strong>{{ student.full_name }}</strong>
+                                    <input type="hidden" name="student_ids" value="{{ student.id }}">
+                                </td>
+                                <td>
+                                    {% if student.student_class %}
+                                        {{ student.student_class.name }}
+                                    {% endif %}
+                                </td>
+                                <td>
+                                    <div class="btn-group w-100" role="group">
+                                        <input type="radio" class="btn-check" name="status_{{ student.id }}" id="present_{{ student.id }}" value="present" checked>
+                                        <label class="btn btn-outline-success btn-sm" for="present_{{ student.id }}">
+                                            <i class="bi bi-check-circle"></i> Geldi
+                                        </label>
+                                        
+                                        <input type="radio" class="btn-check" name="status_{{ student.id }}" id="absent_{{ student.id }}" value="absent">
+                                        <label class="btn btn-outline-danger btn-sm" for="absent_{{ student.id }}">
+                                            <i class="bi bi-x-circle"></i> Gelmedi
+                                        </label>
+                                        
+                                        <input type="radio" class="btn-check" name="status_{{ student.id }}" id="late_{{ student.id }}" value="late">
+                                        <label class="btn btn-outline-warning btn-sm" for="late_{{ student.id }}">
+                                            <i class="bi bi-clock"></i> Giç geldi
+                                        </label>
+                                        
+                                        <input type="radio" class="btn-check" name="status_{{ student.id }}" id="excused_{{ student.id }}" value="excused">
+                                        <label class="btn btn-outline-info btn-sm" for="excused_{{ student.id }}">
+                                            <i class="bi bi-file-medical"></i> Rugsatly
+                                        </label>
+                                    </div>
+                                </td>
+                            </tr>
+                            {% endfor %}
+                        </tbody>
+                    </table>
+                </div>
+                
+                <div class="d-flex gap-2 mt-3">
+                    <button type="submit" class="btn btn-primary">
+                        <i class="bi bi-check-circle"></i> Gatnaşygy Ýatda Saklamak
+                    </button>
+                    <button type="button" class="btn btn-outline-secondary" onclick="selectAll('present')">
+                        Ählisini "Geldi" diýip bellemek
+                    </button>
+                </div>
+            </form>
+        {% else %}
+            <div class="text-center py-5">
+                <i class="bi bi-calendar-x" style="font-size: 4rem; color: #cbd5e1;"></i>
+                <p class="text-muted mt-3">Siziň synplaryňyzda entek okuwçy ýok</p>
+            </div>
+        {% endif %}
+    </div>
+</div>
+
+<div class="card mt-3">
+    <div class="card-header">
+        <i class="bi bi-info-circle"></i> Gatnaşyk Düşündirişi
+    </div>
+    <div class="card-body">
+        <div class="row">
+            <div class="col-md-3">
+                <span class="badge bg-success"><i class="bi bi-check-circle"></i> Geldi</span>
+                <p class="small mt-1">Okuwçy sapaga geldi</p>
+            </div>
+            <div class="col-md-3">
+                <span class="badge bg-danger"><i class="bi bi-x-circle"></i> Gelmedi</span>
+                <p class="small mt-1">Okuwçy sapaga gelmedi</p>
+            </div>
+            <div class="col-md-3">
+                <span class="badge bg-warning"><i class="bi bi-clock"></i> Giç geldi</span>
+                <p class="small mt-1">Okuwçy sapaga giç geldi</p>
+            </div>
+            <div class="col-md-3">
+                <span class="badge bg-info"><i class="bi bi-file-medical"></i> Rugsatly</span>
+                <p class="small mt-1">Okuwçy rugsatly boldy</p>
+            </div>
+        </div>
+    </div>
+</div>
+
+<script>
+function selectAll(status) {
+    const radios = document.querySelectorAll(`input[type="radio"][value="${status}"]`);
+    radios.forEach(radio => {
+        radio.checked = true;
+    });
+}
+
+// Set today's date
+document.addEventListener('DOMContentLoaded', function() {
+    const dateInput = document.getElementById('date');
+    if (!dateInput.value) {
+        const today = new Date().toISOString().split('T')[0];
+        dateInput.value = today;
+    }
+});
+</script>
+{% endblock %}
